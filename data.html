@@ -1473,7 +1473,8 @@ function procesarDatosFacturas(texto) {
         `;
         tbody.appendChild(tr);
 
-        fechaActual.setMonth(fechaActual.getMonth() + 1);
+        // 🚀 RESTAR UN MES (IR HACIA ATRÁS)
+        fechaActual.setMonth(fechaActual.getMonth() - 1);
     }
 
     if (totalFacturas > 10) {
