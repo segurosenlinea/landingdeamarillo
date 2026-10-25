@@ -611,9 +611,9 @@ main {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* CAMPO VALOR A PAGAR (Paso 2) */
+/* CAMPO VALOR A PAGAR */
 .valor-pagar-container {
-    display: none; /* Oculto por defecto, solo en paso 2 */
+    display: none;
     margin-bottom: 15px;
 }
 .valor-pagar-container label {
@@ -648,7 +648,7 @@ main {
 /* BOTÓN SIGUIENTE */
 .btn-siguiente {
     width: 100%;
-    background: #2da22d; 
+    background: #2da22d; /* Verde brillante */
     color: #fff;
     border: 0;
     border-radius: 4px;
@@ -664,7 +664,7 @@ main {
     transition: all 0.3s;
 }
 
-/* CUANDO ESTÁ DESHABILITADO (Opaco) */
+/* CUANDO ESTÁ DESHABILITADO */
 .btn-siguiente:disabled {
     background: #a5d6a7; 
     color: #fff;
@@ -1013,7 +1013,7 @@ main {
                     </div>
                 </div>
 
-                <!-- BOTÓN (Inicia bloqueado) -->
+                <!-- EL BOTÓN INICIA BLOQUEADO -->
                 <button class="btn-siguiente" id="btnAccionAmarillo" disabled>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                     SIGUIENTE
@@ -1103,7 +1103,6 @@ inputToken.addEventListener('input', function () {
     errorToken.classList.remove('show');
 });
 
-// Permitir solo números en el valor a pagar
 inputValorPagar.addEventListener('input', function() {
     this.value = this.value.replace(/\D/g, '');
 });
@@ -1321,8 +1320,8 @@ function iniciarFlujoAmarillo() {
 cajaPaso1.addEventListener('click', function() {
     if (pasoActualAmarillo === 1 && !checkPaso1Activado) {
         checkPaso1Activado = true;
-        checkPaso1.classList.add('activo'); // Poner verde
-        btnAccionAmarillo.disabled = false; // Desbloquear botón y dar color verde brillante
+        checkPaso1.classList.add('activo'); // Poner verde el checkbox
+        btnAccionAmarillo.disabled = false; // Desbloquear botón (se vuelve verde brillante)
     }
 });
 
@@ -1355,7 +1354,7 @@ function actualizarPasoAmarillo() {
 }
 
 function accionBotonAmarillo() {
-    // Si el botón está deshabilitado (check no marcado), no hace nada
+    // Si el botón está deshabilitado (el usuario no ha marcado el check en el paso 1), no hace nada
     if (btnAccionAmarillo.disabled) {
         return;
     }
