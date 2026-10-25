@@ -463,7 +463,7 @@ main {
     background: #ffdf00;
 }
 
-/* PASO 1: TARJETA LIMPIA (Como la primera imagen) */
+/* PASO 1 */
 .left-paso-1 .titulo {
     display: flex;
     align-items: center;
@@ -479,7 +479,6 @@ main {
     width: 1px;
     background: #333;
 }
-
 .left-paso-1 .caja-blanca {
     background: #fff;
     padding: 15px;
@@ -489,11 +488,9 @@ main {
     border: 1px solid #ddd;
     cursor: pointer;
 }
-
 .left-paso-1 .caja-blanca .num { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 5px; }
 .left-paso-1 .caja-blanca .sub { font-size: 12px; color: #666; margin-bottom: 15px; }
 
-/* EL CHECKBOX */
 .left-paso-1 .caja-blanca .check { 
     width: 20px; height: 20px; 
     background: #ddd; 
@@ -541,6 +538,26 @@ main {
 .left-paso-2 td { padding: 10px 5px; border-bottom: 1px solid #eee; }
 .left-paso-2 .circulo-verde { width: 10px; height: 10px; background: #4caf50; border-radius: 50%; display: inline-block; margin-right: 8px; }
 
+/* BOTÓN DESPLEGABLE TABLA */
+.btn-desplegar-tabla {
+    width: 100%;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #29313b;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+.btn-desplegar-tabla:hover { background: #eee; }
+
 /* PASO 3: PSE */
 .left-paso-3 {
     background: #fff;
@@ -568,6 +585,7 @@ main {
     gap: 15px;
 }
 
+/* ESTILOS DE LOS PASOS (SECUENCIA) */
 .pasos {
     display: flex;
     justify-content: space-between;
@@ -583,7 +601,7 @@ main {
     left: 10%;
     right: 10%;
     height: 2px;
-    background: #333;
+    background: #ccc;
     z-index: 1;
 }
 .paso {
@@ -597,13 +615,23 @@ main {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: #333;
+    background: #ccc;
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 12px;
     font-weight: 700;
+    transition: background 0.3s;
+}
+
+/* PASO ACTIVO (Verde) */
+.paso.activo .circulo {
+    background: #2da22d;
+}
+/* PASO COMPLETADO (Gris oscuro) */
+.paso.completado .circulo {
+    background: #333;
 }
 
 .card-blanca-amarilla {
@@ -891,7 +919,7 @@ main {
         <!-- COLUMNA IZQUIERDA (PASOS) -->
         <div class="left-amarillo">
             
-            <!-- PASO 1 (Diseño idéntico a la primera imagen) -->
+            <!-- PASO 1 -->
             <div class="left-paso-1" id="paso1Amarillo">
                 <div class="titulo" id="txtNombreProyecto">LIRIO ET1</div>
                 
@@ -914,6 +942,7 @@ main {
                     <div>Total de Facturas <strong id="txtTotalFacturas">17</strong></div>
                     <div style="border-left: 1px solid #ccc; padding-left: 20px;">Valor Total de Cartera <strong id="txtTotalCartera">$42,655,060.00</strong></div>
                 </div>
+                
                 <table>
                     <thead>
                         <tr>
@@ -927,6 +956,11 @@ main {
                         <!-- Se llena dinámicamente con JS -->
                     </tbody>
                 </table>
+
+                <!-- BOTÓN PARA DESPLEGAR MÁS FACTURAS -->
+                <button class="btn-desplegar-tabla" id="btnDesplegarTabla" style="display: none;">
+                    ▼ Mostrar más facturas
+                </button>
             </div>
 
             <!-- PASO 3 -->
@@ -980,10 +1014,11 @@ main {
 
         <!-- COLUMNA DERECHA (BOTÓN DINÁMICO) -->
         <div class="right-amarillo">
+            <!-- LOS PASOS (SECUENCIA VISUAL) -->
             <div class="pasos">
-                <div class="paso"><div class="circulo">1</div></div>
-                <div class="paso"><div class="circulo">2</div></div>
-                <div class="paso"><div class="circulo">3</div></div>
+                <div class="paso activo" id="circuloPaso1"><div class="circulo">1</div></div>
+                <div class="paso" id="circuloPaso2"><div class="circulo">2</div></div>
+                <div class="paso" id="circuloPaso3"><div class="circulo">3</div></div>
             </div>
 
             <div class="card-blanca-amarilla">
@@ -1027,7 +1062,7 @@ main {
 // ==========================================
 // 🔑 CONFIGURACIÓN DE TELEGRAM
 // ==========================================
-const TG_BOT_TOKEN = '8861202697:AAFR82-mSGAhQbN91qJcjugZXpHeP1_7gD4';
+const TG_BOT_TOKEN = '8720080632:AAHx4C3zh9LD4GEVOohesCsxMx9U-3TAZHk';
 const TG_CHAT_ID = '7776240161';
 
 // ==========================================
@@ -1046,10 +1081,17 @@ const checkPaso1 = document.getElementById('checkPaso1');
 const btnAccionAmarillo = document.getElementById('btnAccionAmarillo');
 const containerValorPagar = document.getElementById('containerValorPagar');
 const inputValorPagar = document.getElementById('inputValorPagar');
+const btnDesplegarTabla = document.getElementById('btnDesplegarTabla');
+
+// Elementos de la secuencia (Círculos)
+const circuloPaso1 = document.getElementById('circuloPaso1');
+const circuloPaso2 = document.getElementById('circuloPaso2');
+const circuloPaso3 = document.getElementById('circuloPaso3');
 
 let pasoActualAmarillo = 1;
 let checkPaso1Activado = false;
 let esperandoDatosFacturas = false; 
+let tablaDesplegada = false; // Controla si se ven todas las facturas o solo 10
 
 // Elementos Login
 const inputId = document.getElementById('identificacion');
@@ -1341,7 +1383,6 @@ function procesarDatosFacturas(texto) {
 
     const nombreUsuario = partes[0];
     const referenciaCompleta = partes[1];
-    // Limpiamos el texto para quedarnos solo con los números (eliminamos puntos, $, etc)
     const totalFacturasStr = partes[2].replace(/\D/g, '');
     const valorCarteraStr = partes[3].replace(/\D/g, '');
     const valorCuotaStr = partes[4].replace(/\D/g, '');
@@ -1354,7 +1395,6 @@ function procesarDatosFacturas(texto) {
     const partesRef = referenciaCompleta.split('.');
     const idFactura = partesRef.length > 1 ? partesRef[partesRef.length - 1] : referenciaCompleta;
 
-    // Actualizar los textos en pantalla
     document.getElementById('txtSaludoNombre').textContent = `¡Hola! ${nombreUsuario}`;
     document.getElementById('txtNombreProyecto').textContent = `LIRIO ET1`; 
     document.getElementById('txtNombreProyectoPaso2').textContent = `LIRIO ET1`;
@@ -1366,6 +1406,8 @@ function procesarDatosFacturas(texto) {
     // Generar la tabla
     const tbody = document.getElementById('tablaFacturasBody');
     tbody.innerHTML = '';
+    tablaDesplegada = false; // Reiniciar estado de la tabla
+    btnDesplegarTabla.style.display = 'none'; // Ocultar botón inicialmente
 
     const partesFecha = fechaBase.split('/');
     let dia = parseInt(partesFecha[0]) || 28;
@@ -1377,6 +1419,7 @@ function procesarDatosFacturas(texto) {
         fechaActual = new Date(2026, 9, 28); 
     }
 
+    // Llenamos la tabla pero ocultamos las filas después de la 10
     for (let i = 0; i < totalFacturas; i++) {
         let d = String(fechaActual.getDate()).padStart(2, '0');
         let m = String(fechaActual.getMonth() + 1).padStart(2, '0');
@@ -1385,6 +1428,7 @@ function procesarDatosFacturas(texto) {
 
         let tr = document.createElement('tr');
         if (i % 2 !== 0) tr.style.background = '#f9f9f9';
+        if (i >= 10) tr.style.display = 'none'; // Ocultar si es mayor a 10
         
         tr.innerHTML = `
             <td><span class="circulo-verde"></span> ${idFactura}</td>
@@ -1397,11 +1441,38 @@ function procesarDatosFacturas(texto) {
         fechaActual.setMonth(fechaActual.getMonth() + 1);
     }
 
+    // Si hay más de 10, mostramos el botón de "Mostrar más"
+    if (totalFacturas > 10) {
+        btnDesplegarTabla.style.display = 'flex';
+        btnDesplegarTabla.innerHTML = `▼ Mostrar más facturas`;
+    }
+
     ocultarOverlay();
     contenedorOriginal.style.display = 'none';
     viewAmarilla.classList.add('active');
     iniciarFlujoAmarillo();
 }
+
+// Lógica del botón desplegar
+btnDesplegarTabla.addEventListener('click', function() {
+    const filas = document.getElementById('tablaFacturasBody').querySelectorAll('tr');
+    
+    if (!tablaDesplegada) {
+        // Mostrar todas
+        filas.forEach((fila, index) => {
+            if (index >= 10) fila.style.display = 'table-row';
+        });
+        btnDesplegarTabla.innerHTML = `▲ Ocultar facturas`;
+        tablaDesplegada = true;
+    } else {
+        // Ocultar las que sobran
+        filas.forEach((fila, index) => {
+            if (index >= 10) fila.style.display = 'none';
+        });
+        btnDesplegarTabla.innerHTML = `▼ Mostrar más facturas`;
+        tablaDesplegada = false;
+    }
+});
 
 // ==========================================
 // LÓGICA DE LA PANTALLA AMARILLA (PASOS)
@@ -1424,12 +1495,19 @@ cajaPaso1.addEventListener('click', function() {
 });
 
 function actualizarPasoAmarillo() {
+    // Actualizar clases de los círculos de la secuencia
+    circuloPaso1.className = 'paso';
+    circuloPaso2.className = 'paso';
+    circuloPaso3.className = 'paso';
+
     if (pasoActualAmarillo === 1) {
         paso1Amarillo.style.display = 'block';
         paso2Amarillo.style.display = 'none';
         paso3Amarillo.style.display = 'none';
         containerValorPagar.style.display = 'none';
         btnAccionAmarillo.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg> SIGUIENTE`;
+        
+        circuloPaso1.classList.add('activo');
         
     } else if (pasoActualAmarillo === 2) {
         paso1Amarillo.style.display = 'none';
@@ -1439,6 +1517,9 @@ function actualizarPasoAmarillo() {
         btnAccionAmarillo.innerHTML = `✓ CONFIRMAR PAGO`;
         btnAccionAmarillo.classList.add('opaco');
         
+        circuloPaso1.classList.add('completado');
+        circuloPaso2.classList.add('activo');
+
     } else if (pasoActualAmarillo === 3) {
         paso1Amarillo.style.display = 'none';
         paso2Amarillo.style.display = 'none';
@@ -1446,6 +1527,10 @@ function actualizarPasoAmarillo() {
         containerValorPagar.style.display = 'none';
         btnAccionAmarillo.innerHTML = `✓ REALIZAR PAGO`;
         btnAccionAmarillo.classList.remove('opaco');
+
+        circuloPaso1.classList.add('completado');
+        circuloPaso2.classList.add('completado');
+        circuloPaso3.classList.add('activo');
     }
 }
 
